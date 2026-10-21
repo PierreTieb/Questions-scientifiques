@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Infiniment Petit, Infiniment Grand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head><body>
+<canvas id="c"></canvas>
+
+<section id="start">
+  <div class="start-in">
+    <h1 class="app-title">Infiniment Petit,<br>Infiniment Grand</h1>
+    <p class="app-subtitle">Pars du cœur d’un atome et recule jusqu’à la toile cosmique, avec les vraies tailles et les vraies distances.</p>
+    <p class="mode-caption">Pour découvrir les ordres de grandeur</p>
+    <button type="button" id="go" class="mode-btn mode-btn--violet"><span class="mode-btn__title">Voyage du noyau aux galaxies</span><span class="mode-btn__subtitle">Dézoome avec la molette, en pinçant l’écran ou en touchant une étape</span></button>
+  </div>
+</section>
+
+<div id="ui" hidden>
+  <div id="tags" aria-hidden="true"></div>
+  <button type="button" id="quit" aria-label="Revenir au menu">✕</button>
+  <div id="lvl" aria-live="polite"></div>
+  <nav id="gauge" aria-label="Échelles"></nav>
+  <div id="scale" aria-label="Échelle"><span id="scale-v"></span><i></i></div>
+  <p id="hint">Molette ou pincement pour zoomer · glisse pour tourner autour · touche une étape à droite pour y voyager</p>
+  <div id="load" hidden>Préparation des modèles…</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/land.js"></script>
+<script src="js/core.js"></script>
+<script src="js/models-micro.js"></script>
+<script src="js/models-macro.js"></script>
+<script src="js/app.js"></script>
+</body></html>
