@@ -6,8 +6,11 @@
    (négative = déjà visible en arrière-plan à l'étage précédent) ; sol : fait partie du paysage visible dès la fourmi ;
    fr : recul de la caméra à la station (en décades) pour cadrer l'objet entier autour du noyau ; mk : nom de son repère. */
 const LV=[
-  {n:'Noyau d’atome',b:L0,bg:'#0b1030',r:1.8,out:[1.6,2]},{n:'Atome',b:L1,bg:'#0d1436',r:2.35,out:[.12,.3]},{n:'Molécule',b:L2,bg:'#101a3e',r:2.5,out:[.55,.85]},
-  {n:'ADN',b:L3,bg:'#0e2a3c',r:9,out:[1.6,2.1]},{n:'Chromosome',b:L4,bg:'#1b1636',r:3.2,out:[.45,.75],fr:.05},{n:'Cellule',b:L5,bg:'#0f2e33',r:3.4,out:[.5,.8]},
+  {n:'Noyau d’atome',b:L0,bg:'#0b1030',r:2,out:[1.6,2],leg:[['#E8483C','Proton (+)'],['#2F6BE0','Neutron (0)']]},
+  {n:'Atome d’oxygène',b:L1,bg:'#0d1436',r:2.35,out:[.12,.3],leg:[['#6fa8ff','Électron (−)'],['#FFD84D','Noyau (repère)']]},
+  {n:'Molécule d’eau',b:L2,bg:'#101a3e',r:2.5,out:[.55,.85],leg:[['#E5413A','Oxygène (O)'],['#F4F4F4','Hydrogène (H)'],['#ffffff','Liaison hydrogène (pointillés)']]},
+  
+  {n:'ADN',b:L3,bg:'#0e2a3c',r:9,out:[1.6,2.1],leg:[['#F5C431','Adénine (A)'],['#E5413A','Thymine (T)'],['#45B74F','Cytosine (C)'],['#2F6BE0','Guanine (G)']]},{n:'Chromosome',b:L4,bg:'#1b1636',r:3.2,out:[.45,.75],fr:.05},{n:'Cellule',b:L5,bg:'#0f2e33',r:3.4,out:[.5,.8]},
   {n:'Micro-organisme',b:L6,bg:'#1d2a1e',r:5,out:[2,2.5]},{n:'Fourmi',b:L7,bg:'#bfdcef',r:3.2,out:[2.2,2.7],fr:.05},{n:'Humain',b:L8,bg:'#9fd0f0',r:3.2,out:[2.1,2.6],sol:1,fr:.2},
   {n:'Maison',b:L9,bg:'#a6d4f2',r:2.2,out:[1.9,2.4],sol:1,fr:.12},{n:'Village',b:L10,bg:'#a9d2ee',r:7,out:[1.6,2.1],sol:1},
   {n:'France',b:L11,bg:'#16264a',r:6,out:[.6,1],sol:1},{n:'Terre',b:L12,bg:'#04060e',r:2.6,out:[2.2,2.6],fin:[-.6,-.3],fr:.2},
@@ -46,11 +49,11 @@ function place(e,o,w){if(w<.02){if(e.style.opacity!=='0')e.style.opacity=0;retur
 let LS=null,u=M[0],p=0,pT=0,vel=0,fl=null,yaw=.7,pitch=.32,t0=performance.now(),tp=0,run=0;const D=12;
 function build(){if(LS)return;LS=LV.map((v,i)=>{const o=v.b();o.g.visible=false;scene.add(o.g);
   /* tailles des nuages de points proportionnelles à l'échelle de l'étage */
-  const pm=[];o.g.traverse(q=>{if(q.isPoints&&q.material.sizeAttenuation)pm.push([q.material,q.material.size]);if(q.isMesh&&q.material.userData&&q.material.userData.ro!==undefined)q.renderOrder=q.material.userData.ro});
+  const pm=[],fx=[];o.g.traverse(q=>{if(q.isPoints)(q.material.sizeAttenuation?pm:fx).push([q.material,q.material.size]);if(q.isMesh&&q.material.userData&&q.material.userData.ro!==undefined)q.renderOrder=q.material.userData.ro});
   /* repère de l'objet quand il devient trop petit : anneau jaune et nom */
   const mk=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute([0,0,0],3)),new THREE.PointsMaterial({size:22,map:ringTex,color:0xFFD84D,transparent:true,depthTest:false,depthWrite:false,sizeAttenuation:false}));
   mk.renderOrder=20;mk.frustumCulled=false;mk.visible=false;scene.add(mk);
-  return Object.assign(o,{i,pm,main:o.g.children.filter(c=>c!==o.deco),fm:mats(o.g,o.deco),fd:o.deco?mats(o.deco):null,c:o.c||V3(0,0,0),mk,ml:i<N-1?label(v.mk||v.n,'chain'):null,tg:(o.tags||[]).map(([ob,t,c])=>({o:ob,e:label(t,c)}))})})}
+  return Object.assign(o,{i,pm,fx,main:o.g.children.filter(c=>c!==o.deco),fm:mats(o.g,o.deco),fd:o.deco?mats(o.deco):null,c:o.c||V3(0,0,0),mk,ml:i<N-1?label(v.mk||v.n,'chain'):null,tg:(o.tags||[]).map(([ob,t,c])=>({o:ob,e:label(t,c)}))})})}
 
 /* le sol (fourmi → France) : la caméra ne passe pas dessous */
 const onGround=()=>u>M[7]-.5&&u<M[11]+.3;
@@ -70,7 +73,9 @@ function frame(){if(!run)return;requestAnimationFrame(frame);
     fin=v.sol?fsol*(1-sm(3.2,3.5,Math.log10(s))):i?sm(fi[0],fi[1],(u-M[i-1])/(M[i]-M[i-1])):1,wm=fin*(v.out?1-sm(v.out[0],v.out[1],d):1),wd=L.deco?fin*(i<N-1?1-sm(.25,.65,(u-M[i])/(M[i+1]-M[i])):1):0;
     L.g.visible=wm>.004||wd>.004;
     if(L.g.visible){L.g.position.copy(P[i]);L.g.scale.setScalar(s);L.main.forEach(o=>o.visible=wm>.004);fade(L.fm,wm);if(L.deco){L.deco.visible=wd>.004;fade(L.fd,wd)}
-      L.pm.forEach(([m,s0])=>m.size=s0*s);L.upd(t)}
+      L.pm.forEach(([m,s0])=>m.size=s0*s);
+      /* points de taille fixe (Soleil, planètes, étoiles, électrons…) : ils rétrécissent avec leur étage quand on dézoome */
+      const ks=Math.min(1,Math.pow(10,M[i]-u));L.fx.forEach(([m,s0])=>m.size=s0*ks);L.upd(t)}
     const wt=L.g.visible?wm*sm(-.5,-.1,d)*(v.out?1-sm(v.out[0]-.3,v.out[0],d):1):0;L.tg.forEach(T=>tags.push([T.e,T.o,wt]));
     wk[i]=i<N-1?(1-sm(4,9,v.r*s*ppu))*sm(.05,.3,d)*(1-sm(M[i+1]+.1,M[i+1]+.5,u)):0});
   /* un seul repère à la fois dans une même lignée : celui du parent l'emporte */
@@ -92,7 +97,9 @@ function scaleBar(dc){const pw=Math.round(Math.log10(BAR*2*dc*TAN*Math.pow(10,u)
 
 /* interface : nom de l'étage le plus proche, jauge des échelles */
 let lastI=-1;
-function ui(){let i=0;for(let j=1;j<N;j++)if(Math.abs(PS[j]-p)<Math.abs(PS[i]-p))i=j;if(i!=lastI){lastI=i;$('lvl').textContent=LV[i].n;$('lvl').classList.remove('pop');void $('lvl').offsetWidth;$('lvl').classList.add('pop');
+/* légende des couleurs, pour les étages qui en ont une */
+function legend(i){const L=LV[i].leg,e=$('legend');e.classList.toggle('on',!!L);if(L)e.innerHTML=L.map(([c,t])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')}
+function ui(){let i=0;for(let j=1;j<N;j++)if(Math.abs(PS[j]-p)<Math.abs(PS[i]-p))i=j;if(i!=lastI){lastI=i;$('lvl').textContent=LV[i].n;legend(i);$('lvl').classList.remove('pop');void $('lvl').offsetWidth;$('lvl').classList.add('pop');
   [...$('gauge').children].forEach((d,j)=>d.classList.toggle('on',N-1-j==i))}}
 $('gauge').innerHTML=LV.map((v,i)=>`<button type="button" data-i="${i}" aria-label="${v.n}"><span>${v.n}</span></button>`).reverse().join('');
 $('gauge').onclick=e=>{const b=e.target.closest('button');if(!b)return;const j=+b.dataset.i,du=Math.abs(M[j]-u);if(du<1e-3)return;

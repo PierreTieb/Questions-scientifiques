@@ -14,7 +14,8 @@ const tex=(w,h,f,rep)=>{const c=document.createElement('canvas');c.width=w;c.hei
   t.mapping=THREE.EquirectangularReflectionMapping;scene.environment=new THREE.PMREMGenerator(rd).fromEquirectangular(t).texture})();
 
 const STD=o=>new THREE.MeshStandardMaterial(o),PHY=o=>new THREE.MeshPhysicalMaterial(o);
-const gloss=(c,o={})=>PHY(Object.assign({color:c,roughness:.35,metalness:0,clearcoat:.6,clearcoatRoughness:.2,envMapIntensity:.55},o));
+/* matière satinée « pâte à modeler » : douce, légèrement brillante */
+const gloss=(c,o={})=>PHY(Object.assign({color:c,roughness:.42,metalness:0,clearcoat:.35,clearcoatRoughness:.35,envMapIntensity:.5},o));
 const matte=(c,o={})=>STD(Object.assign({color:c,roughness:.75,envMapIntensity:.35},o));
 const glass=(c,op=.3,o={})=>PHY(Object.assign({color:c,roughness:.15,metalness:0,transparent:true,opacity:op,depthWrite:false,side:THREE.DoubleSide,clearcoat:1},o));
 const mesh=(g,m,x=0,y=0,z=0)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);return o};
@@ -30,6 +31,13 @@ function tube(pts,r,m,{closed=false,seg=120,rs=16,rf=null}={}){
 function rod(a,b,r,m,s=14){const d=b.clone().sub(a),o=mesh(new THREE.CylinderGeometry(r,r,d.length(),s),m);o.position.copy(a).add(b).multiplyScalar(.5);o.quaternion.setFromUnitVectors(V3(0,1,0),d.normalize());return o}
 /* ellipsoïde */
 const ell=(rx,ry,rz,m,x=0,y=0,z=0)=>{const o=ball(1,m,x,y,z,40);o.scale.set(rx,ry,rz);return o};
+/* surface bosselée : chaque sommet est poussé le long de sa normale par un bruit continu (la même position donne le même relief, sans couture) */
+function lumpy(o,amp,f){const g=o.geometry,p=g.attributes.position,n=g.attributes.normal,v=V3(0,0,0),w=V3(0,0,0),nz=(x,y,z)=>Math.sin(x*f+1.3*Math.sin(y*f*.7))*Math.sin(y*f+1.7*Math.sin(z*f*.8))*Math.sin(z*f+1.1*Math.sin(x*f*.9));
+  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);w.fromBufferAttribute(n,i);v.addScaledVector(w,amp*nz(v.x,v.y,v.z));p.setXYZ(i,v.x,v.y,v.z)}g.computeVertexNormals();return o}
+/* ombre douce de contact posée au sol (dessinée juste après les sols) */
+const shadowTex=tex(128,128,x=>{const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(0,0,0,.55)');g.addColorStop(.55,'rgba(0,0,0,.25)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128)});
+function blob(rx,rz,x=0,y=0,z=0,op=1){const m=new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,opacity:op,depthWrite:false});m.userData.ro=-2;
+  const o=mesh(new THREE.CircleGeometry(1,40).rotateX(-Math.PI/2),m,x,y,z);o.scale.set(rx,1,rz);return o}
 /* points d'une sphère de Fibonacci */
 const fib=(n,r=1)=>Array.from({length:n},(_,i)=>{const y=1-2*(i+.5)/n,q=Math.sqrt(1-y*y),a=i*2.39996;return V3(Math.cos(a)*q*r,y*r,Math.sin(a)*q*r)});
 /* halo lumineux (sprite additif) */
@@ -40,9 +48,9 @@ const dotTex=tex(64,64,x=>{const g=x.createRadialGradient(32,32,0,32,32,32);g.ad
 function cloud(pos,col,size,op=1,add=true){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
   const p=new THREE.Points(g,new THREE.PointsMaterial({size,map:dotTex,vertexColors:!!col,transparent:true,opacity:op,depthWrite:false,blending:add?THREE.AdditiveBlending:THREE.NormalBlending,sizeAttenuation:true}));p.frustumCulled=false;return p}
 /* points de taille fixe à l'écran (en pixels) quelle que soit l'échelle : électrons, planètes, étoiles, repères */
-function dots(pos,col,px,op=1,c=0xffffff){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
-  const p=new THREE.Points(g,new THREE.PointsMaterial({size:px,map:dotTex,color:c,vertexColors:!!col,transparent:true,opacity:op,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:false}));p.frustumCulled=false;return p}
-const dot=(c,px,op=1)=>dots([0,0,0],null,px,op,c);
+function dots(pos,col,px,op=1,c=0xffffff,map=dotTex,add=true){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  const p=new THREE.Points(g,new THREE.PointsMaterial({size:px,map,color:c,vertexColors:!!col,transparent:true,opacity:op,depthWrite:false,blending:add?THREE.AdditiveBlending:THREE.NormalBlending,sizeAttenuation:false}));p.frustumCulled=false;return p}
+const dot=(c,px,op=1,map,add)=>dots([0,0,0],null,px,op,c,map,add);
 /* cercle d'un trait fin dans le plan xz (orbites) ; beaucoup de segments pour qu'il passe bien par l'objet même très agrandi */
 function orbit(r,c,op=.3,n=2048){const P=[];for(let i=0;i<n;i++){const a=i/n*2*Math.PI;P.push(Math.cos(a)*r,0,Math.sin(a)*r)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
   const o=new THREE.LineLoop(g,new THREE.LineBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));o.frustumCulled=false;return o}
@@ -53,7 +61,7 @@ const ringTex=tex(64,64,x=>{x.strokeStyle='#fff';x.lineWidth=5;x.beginPath();x.a
 const soilM=(o,k)=>{const m=matte(0xffffff,Object.assign({roughness:1,transparent:true,depthWrite:false},o));m.userData.ro=k-20;return m};
 
 /* Échelle réelle : combien de mètres vaut 1 unité de modèle à chaque étage (chaque modèle est cadré à cette échelle).
-   Noyau de carbone (rayon 2,7 fm), électrons externes à 70 pm, liaison C–O de 143 pm, ADN (0,34 nm par paire de bases), chromosome de ~3 µm,
+   Noyau d'oxygène (rayon 2,7 fm), électrons externes à 60 pm, liaison O–H de 95,8 pm, ADN (0,34 nm par paire de bases), chromosome de ~3 µm,
    cellule de 20 µm, micro-organisme de 200 µm, fourmi de 5 mm, humain de 1,75 m, maison (1 u = 3 m), village (100 m), France (100 km), Terre (rayon 6 371 km),
    orbite de la Lune (1 u = 100 000 km), orbite de Neptune (30 ua), étoiles proches, Voie lactée (100 000 al), Groupe local (Andromède à 2,5 millions d'al), toile cosmique. */
-const LY=9.461e15,MPU=[2.7e-15/1.8,70e-12/2.35,143e-12/2.065,.34e-9/.36,4.5e-7,10e-6/3.4,2e-4/10,5e-3/6.4,1.75/6.35,3,100,1e5,6.371e6/2.6,1e8,30.07*1.496e11/6.5,2.5e16,5e4*LY/9,2.54e6*LY/4.5,1e8*LY];
+const LY=9.461e15,MPU=[2.7e-15/2,60e-12/2.35,95.8e-12/1.7,.34e-9/.36,4.5e-7,10e-6/3.4,2e-4/10,5e-3/6.4,1.75/6.35,3,100,1e5,6.371e6/2.6,1e8,30.07*1.496e11/6.5,2.5e16,5e4*LY/9,2.54e6*LY/4.5,1e8*LY];
