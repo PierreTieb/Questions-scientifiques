@@ -19,7 +19,7 @@ const LV=[
   {n:'Terre et Lune',b:L14,m:1e8,bg:'#020308',inn:[1.4,.8],out:[1.5,2.3]},
   {n:'Système solaire',b:L15,m:MSS,bg:'#020308',inn:[4,3.5],out:[4.3,5]},
   {n:'Étoiles voisines',b:L16,m:2.5e16,bg:'#020207',inn:[3,2.2],out:[1.4,2]},
-  {n:'Voie lactée',b:L17,m:5e4*LY/4.5,bg:'#010104',inn:[1.3,.7],out:[1.2,1.8]},
+  {n:'Voie lactée',b:L17,m:5e4*LY/4.5,bg:'#010104',inn:[3.9,3.6],out:[1.2,1.8]},
   {n:'Galaxies voisines',b:L18,m:2.54e6*LY/4,bg:'#000003',inn:[1.4,.9],out:[.8,1.3]},
   {n:'Superamas de la Vierge',b:L19,m:1.35e7*LY,bg:'#000002',inn:[1.2,.6]}];
 /* LM : échelle réelle de chaque étage ; M : position de sa station (fr recule un peu la vue pour cadrer l'objet entier) */

@@ -156,13 +156,54 @@ function galaxy(n,arms,{tw=2.3,core='#ffe2a8',arm='#a898ff',seed=0,size=1024}={}
     if(ci==0){if(i>n*.25)break;const r=Math.abs(gauss())*.16,a=rnd(0,TAU);X=Math.cos(a)*r*1.3;Y=Math.sin(a)*r*.8}
     else{if(ci==2&&i>n*.08)break;const j=i%arms,t=Math.pow(Math.random(),.8),r=.12+t*.88,a=j*TAU/arms+Math.log(r/.12)*tw+gauss()*.32*(1-t*.4)+seed;X=Math.cos(a)*r;Y=Math.sin(a)*r}
     const s=rnd(.8,2.2)*w/1024;x.fillRect(o+X*k,o+Y*k,s,s)}})})}
-const sunInMW=(()=>{const r=26000/5e4,a=TAU/4+Math.log(r/.12)*2.1;return[Math.cos(a)*r,Math.sin(a)*r]})();
-/* 17 · la Voie lactée (100 000 al ; 1 unité ≈ 11 000 al) : le Soleil est à 26 000 al du centre, sur un bras */
-function L17(){const img=galaxy(70000,4,{tw:2.1,size:2048}),R0=4.5;
-  return{a:[sunInMW[0]*R0,sunInMW[1]*R0],main:(c,v)=>{c.drawImage(img,-1.2*R0,-1.2*R0,2.4*R0,2.4*R0);v.tag('Soleil',sunInMW[0]*R0,sunInMW[1]*R0,sm(-.6,0,v.d)*(1-sm(.6,1,v.d))*.9)}}}
+/* Voie lactée vue de dessus (rayon 1 = 50 000 al) : un disque d'étoiles de plus en plus dense vers le centre, une barre centrale,
+   et des bras à peine marqués ; le Soleil, à 26 000 al du centre, est sur l'un d'eux. La même densité sert à l'image et aux étoiles qui l'annoncent */
+const MWA=4,MWT=2.1,MWC=TAU/4-MWT*Math.log(.12);
+function mwDens(x,y,amp=.22){const r=Math.hypot(x,y);if(r>1.25)return 0;const t=Math.atan2(y,x),bx=x*.94+y*.34,by=y*.94-x*.34;
+  return Math.exp(-r/.3)*(1+amp*Math.cos(MWA*(t-MWT*Math.log(Math.max(r,.02))-MWC)))*(r>1?Math.exp(-(r-1)*8):1)+2.2*Math.exp(-((r/.07)**2))+1.2*Math.exp(-((bx/.16)**2)-((by/.06)**2))}
+const STC=['#ffffff','#cfdcff','#fff2c8','#ffd2a0','#ffb08a'],stc=()=>{const q=Math.random();return q<.3?0:q<.5?1:q<.75?2:q<.9?3:4};
+/* image du disque : lueur lisse calculée pixel par pixel, puis des dizaines de milliers d'étoiles et quelques traînées de poussière */
+function diskGalaxy(size,{amp=.22,core=[255,226,170],disk=[185,195,255],n=60000}={}){return off(size,size,(x,w)=>{
+  const g=256,k=g/2.4,id=x.createImageData(g,g),d=id.data;
+  for(let j=0;j<g;j++)for(let i=0;i<g;i++){const X=(i-g/2)/k,Y=(j-g/2)/k,f=mwDens(X,Y,amp),m=Math.min(1,Math.hypot(X,Y)/.35),o=(j*g+i)*4;
+    d[o]=lerp(core[0],disk[0],m);d[o+1]=lerp(core[1],disk[1],m);d[o+2]=lerp(core[2],disk[2],m);d[o+3]=255*(1-Math.exp(-f*.8))}
+  x.imageSmoothingEnabled=true;x.drawImage(off(g,g,c=>c.putImageData(id,0,0)),0,0,w,w);
+  const K=w/2.4,o=w/2,sz=w/2048;
+  x.globalCompositeOperation='source-over';x.fillStyle='rgba(25,12,30,.08)';
+  for(let c=0;c<n/6;){const X=rnd(-1,1),Y=rnd(-1,1),r=Math.hypot(X,Y),t=Math.atan2(Y,X);if(r<.22||r>.95||Math.cos(MWA*(t-MWT*Math.log(r)-MWC)+.7)<.8)continue;c++;x.fillRect(o+X*K,o+Y*K,3*sz,3*sz)}
+  x.globalCompositeOperation='lighter';const cols=STC.map(h=>rgba(h,.5));
+  for(let c=0;c<n;){const X=rnd(-1.2,1.2),Y=rnd(-1.2,1.2);if(Math.random()*4.5>mwDens(X,Y,amp*1.2))continue;c++;x.fillStyle=cols[stc()];const s=rnd(1,2.4)*sz;x.fillRect(o+X*K,o+Y*K,s,s)}})}
+const sunInMW=(()=>{const r=26000/5e4,a=TAU/4+Math.log(r/.12)*MWT;return[Math.cos(a)*r,Math.sin(a)*r]})();
+/* 17 · la Voie lactée (100 000 al ; 1 unité ≈ 11 000 al). En s'éloignant des étoiles voisines, des étoiles de plus en plus lointaines apparaissent
+   (quatre couches : 40, 250, 1 500 et 9 000 al autour du Soleil), avec des amas et des nébuleuses connus, jusqu'à former le disque de la galaxie */
+function L17(){const R0=4.5,KL=5e4/R0,img=diskGalaxy(2048),sun=[sunInMW[0]*R0,sunInMW[1]*R0],
+    layers=[[40,1200],[250,2000],[1500,2800],[9000,3600]].map(([D,n])=>{const Du=D/KL,g=STC.map(()=>[]);let fm=0;
+      for(let i=0;i<300;i++){const a=rnd(0,TAU),r=Du*Math.sqrt(Math.random())*1.5;fm=Math.max(fm,mwDens((sun[0]+Math.cos(a)*r)/R0,(sun[1]+Math.sin(a)*r)/R0))}
+      /* répartition en cloche autour du Soleil : la couche n'a pas de bord net et se fond dans la suivante */
+      for(let c=0;c<n;){const dx=gauss()*Du*.55,dy=gauss()*Du*.55,r=Math.hypot(dx,dy);if(Math.random()>sm(3,14,r*KL))continue;const x=sun[0]+dx,y=sun[1]+dy;
+        if(Math.random()*fm*1.1>mwDens(x/R0,y/R0))continue;c++;g[stc()].push(x,y,Math.random()<.08?2.2:rnd(1,1.6))}
+      return{Du,g}}),
+    /* objets connus, placés par leur longitude galactique (vers le centre = 0°) et leur distance */
+    uc=[-sunInMW[0]/Math.hypot(...sunInMW),-sunInMW[1]/Math.hypot(...sunInMW)],up=[-uc[1],uc[0]],
+    OBJ=[['Hyades',180.1,153,'cl','#cfe0ff'],['Pléiades',166.6,444,'cl','#a8c8ff'],['Bételgeuse',199.8,548,'st','#ffb070'],['Rigel',209.2,860,'st','#cfe0ff'],
+      ['Nébuleuse d’Orion',209,1344,'neb','#ff7fb0'],['Deneb',84.3,2600,'st','#f4f6ff'],['Nébuleuse de la Lagune',6,4100,'neb','#ff6f9a'],['Nébuleuse de l’Aigle',17,5700,'neb','#ff8a7a'],
+      ['Nébuleuse de la Carène',287.6,7500,'neb','#ff7f9f'],['Omega du Centaure',309.1,17000,'gl','#ffe6b0']]
+      .map(([n,l,d,k,col])=>{const c=Math.cos(l*R)*d/KL,s=Math.sin(l*R)*d/KL;return[n,sun[0]+c*uc[0]+s*up[0],sun[1]+c*uc[1]+s*up[1],k,col,d/KL]}),
+    CL=[[0,0],[-3,-2],[3,-1],[-1,3],[4,2],[-4,1],[1,-4]];
+  return{a:sun,main:(c,v)=>{const px=v.px,mn=v.mn,gate=sm(-3.5,-3.15,v.d)*(1-sm(-.4,.2,v.d)),ia=sm(-1.3,-.5,v.d);
+    if(ia>.01){c.globalAlpha=v.w*ia;c.drawImage(img,-1.2*R0,-1.2*R0,2.4*R0,2.4*R0)}
+    if(gate>.01){layers.forEach(L=>{const s=L.Du*v.q,a=gate*sm(30*mn,6*mn,s)*(1-sm(.35*mn,.12*mn,s));if(a<.01)return;c.globalAlpha=v.w*a;
+        L.g.forEach((A,ci)=>{c.fillStyle=STC[ci];for(let i=0;i<A.length;i+=3){const x=A[i],y=A[i+1];if(x<v.x0||x>v.x1||y<v.y0||y>v.y1)continue;const z=A[i+2]*px;c.fillRect(x-z/2,y-z/2,z,z)}})});
+      OBJ.forEach(([n,x,y,k,col,d])=>{const f=d*v.q/mn,a=gate*sm(4,2,f)*(1-sm(.06,.02,f));if(a<.01||x<v.x0-20*px||x>v.x1+20*px||y<v.y0-20*px||y>v.y1+20*px)return;c.globalAlpha=v.w*a;
+        if(k=='cl')CL.forEach(([dx,dy])=>{glow(c,x+dx*px,y+dy*px,4*px,col,.6);disc(c,x+dx*px,y+dy*px,1*px,'#fff')});
+        else if(k=='neb'){glow(c,x,y,14*px,col,.55);glow(c,x+3*px,y-2*px,8*px,'#ffd0e0',.4);disc(c,x,y,1.2*px,'#fff')}
+        else if(k=='gl'){glow(c,x,y,7*px,col,.7);disc(c,x,y,2*px,'#fff6e0')}
+        else{glow(c,x,y,7*px,col,.6);disc(c,x,y,1.8*px,col)}
+        v.tag(n,x,y,a*sm(.5,.45,f)*(1-sm(.38,.33,f)))})}
+    c.globalAlpha=v.w;v.tag('Soleil',sun[0],sun[1],sm(-.6,0,v.d)*(1-sm(.6,1,v.d))*.9);v.tag('Centre de la Voie lactée',0,0,sm(-.8,-.2,v.d)*(1-sm(.6,1,v.d)))}}}
 
 /* 18 · les galaxies voisines (1 unité ≈ 635 000 al) : Andromède, deux fois plus grande que la Voie lactée, à 2,5 millions d'al */
-function L18(){const K=LY/(2.54e6*LY/4),mw=[-1.8,.7],an=[mw[0]+3.8,mw[1]-1.2],tr=[an[0]+.5,an[1]+1.1],G=[galaxy(70000,4,{tw:2.1,size:512}),galaxy(30000,2,{tw:1.7,core:'#fff0d0',arm:'#d0c8ff',seed:1,size:512}),galaxy(8000,2,{core:'#ffe2a8',arm:'#a8c8ff',seed:2,size:256})],
+function L18(){const K=LY/(2.54e6*LY/4),mw=[-1.8,.7],an=[mw[0]+3.8,mw[1]-1.2],tr=[an[0]+.5,an[1]+1.1],G=[diskGalaxy(512,{n:15000}),diskGalaxy(512,{amp:.3,core:[255,236,205],disk:[205,200,255],n:15000}),galaxy(8000,2,{core:'#ffe2a8',arm:'#a8c8ff',seed:2,size:256})],
     dw=Array.from({length:60},(_,i)=>{const b=i%2?mw:an,a=rnd(0,TAU),d=rnd(.08,1.6);return[b[0]+Math.cos(a)*d,b[1]+Math.sin(a)*d]}),far=Array.from({length:400},()=>[rnd(-45,45),rnd(-30,30)]),
     gx=(c,g,[x,y],r,a,sq)=>{c.save();c.translate(x,y);c.rotate(a);c.scale(1,sq);c.drawImage(g,-1.2*r,-1.2*r,2.4*r,2.4*r);c.restore()};
   return{a:mw,c:[mw[0]+1.9,mw[1]-.6],main:(c,v)=>{const px=v.px;far.forEach(([x,y])=>disc(c,x,y,.8*px,'rgba(220,214,255,.45)'));dw.forEach(([x,y])=>disc(c,x,y,1.1*px,'rgba(255,230,192,.7)'));
