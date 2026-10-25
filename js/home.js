@@ -1,10 +1,10 @@
 /* Accueil : tapisserie de points d'interrogation sur fond vert pomme, dans des polices, tailles et inclinaisons variées (tirées à chaque ouverture) ;
    moitié en tons clairs (blanc, verts très pâles), moitié en verts sombres */
 (()=>{const F=["'Fredoka',sans-serif","'Nunito',sans-serif","Georgia,serif","'Courier New',monospace","'Comic Sans MS','Chalkboard SE',cursive","Impact,'Arial Black',sans-serif","'Times New Roman',serif","'Trebuchet MS',sans-serif","'Brush Script MT',cursive"],
-  LIGHT=['#FFFFFF','#F6FCEC','#ECF8DC','#F2FAE6','#E6F6D2'],DARK=['#2F5A27','#3F6B2E','#5C8A3A','#4A7A52','#6E9A3C','#2E5A3A','#557A2E'],
+  LIGHT=['#FFFFFF','#FAFFF2','#F2FBE4','#F6FDEB','#EEF9DD'],DARK=['#24501E','#335F24','#4E7F2E','#3C6C44','#5E8C2E','#22502E','#486E22'],
   pick=A=>A[Math.random()*A.length|0],cols=8,rows=12;let h='';
   for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const x=(i+.5+(Math.random()-.5)*.7)/cols*100,y=(j+.5+(Math.random()-.5)*.7)/rows*100,
-    light=Math.random()<.5,op=light?.55+Math.random()*.35:.1+Math.random()*.18;
+    light=Math.random()<.5,op=light?.72+Math.random()*.28:.2+Math.random()*.24;
     h+=`<span style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;font-family:${pick(F)};font-size:${18+Math.random()*52|0}px;color:${pick(light?LIGHT:DARK)};opacity:${op.toFixed(2)};transform:translate(-50%,-50%) rotate(${(Math.random()-.5)*50|0}deg)">?</span>`}
   document.getElementById('qbg').innerHTML=h})();
 

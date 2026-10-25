@@ -9,7 +9,7 @@ button{font-family:var(--font-body);-webkit-user-select:none;user-select:none}
 
 /* accueil : fond vert pomme pastel couvert de points d'interrogation clairs et sombres, une carte par question */
 #start{position:fixed;inset:0;z-index:30;overflow:auto;display:flex;justify-content:center;
-  padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(32px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#EAF7D6,#D6EFBE)}
+  padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(32px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#D8F2AE,#B5E07E)}
 #qbg{position:fixed;inset:0;overflow:hidden;pointer-events:none}
 #qbg span{position:absolute;font-weight:700;line-height:1;user-select:none}
 .start-in{position:relative;width:100%;max-width:520px;margin:auto 0}
