@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Infiniment Petit, Infiniment Grand</title>
+<title>Diverses Questions Scientifiques</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -9,29 +9,91 @@
 <canvas id="c"></canvas>
 
 <section id="start">
+  <div id="qbg" aria-hidden="true"></div>
   <div class="start-in">
-    <h1 class="app-title">Infiniment Petit,<br>Infiniment Grand</h1>
-    <p class="app-subtitle">Pars du cœur d’un atome et recule jusqu’à la toile cosmique, avec les vraies tailles et les vraies distances.</p>
-    <p class="mode-caption">Pour découvrir les ordres de grandeur</p>
-    <button type="button" id="go" class="mode-btn mode-btn--violet"><span class="mode-btn__title">Voyage du noyau aux galaxies</span><span class="mode-btn__subtitle">Dézoome avec la molette, en pinçant l’écran ou en touchant une étape</span></button>
+    <h1 class="app-title">Diverses Questions Scientifiques</h1>
+    <p class="app-subtitle">Les petites questions que tu te poses sur la science, enfin expliquées simplement</p>
+
+    <button type="button" id="go" class="q-card q-card--sizes">
+      <svg class="q-card__art" viewBox="0 0 320 120" aria-hidden="true">
+        <defs>
+          <radialGradient id="g-nuc" cx=".4" cy=".35"><stop offset="0" stop-color="#ffb3a8"/><stop offset="1" stop-color="#d6382c"/></radialGradient>
+          <radialGradient id="g-star"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#ffd54a"/><stop offset=".7" stop-color="#ff9a2a" stop-opacity=".55"/><stop offset="1" stop-color="#ff9a2a" stop-opacity="0"/></radialGradient>
+        </defs>
+        <g transform="translate(88 60)" fill="none" stroke="#8fb8ff" stroke-width="2.2">
+          <ellipse rx="44" ry="15"/><ellipse rx="44" ry="15" transform="rotate(60)"/><ellipse rx="44" ry="15" transform="rotate(-60)"/>
+          <circle r="8" fill="url(#g-nuc)" stroke="none"/>
+          <circle cx="44" r="4.5" fill="#dce9ff" stroke="none"/><circle cx="-22" cy="-38" r="4.5" fill="#dce9ff" stroke="none"/><circle cx="-22" cy="38" r="4.5" fill="#dce9ff" stroke="none"/>
+        </g>
+        <path d="M146 60h28M152 53l-7 7 7 7M168 53l7 7-7 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <g transform="translate(232 60)">
+          <circle r="50" fill="url(#g-star)"/>
+          <path d="M0-46 4-4 46 0 4 4 0 46-4 4-46 0-4-4Z" fill="#fff6c8" opacity=".85"/>
+          <circle r="16" fill="#ffe27a"/>
+        </g>
+      </svg>
+      <span class="q-card__title">Quelles sont les tailles dans l’univers ?</span>
+      <span class="q-card__sub">Du noyau d’un atome jusqu’aux galaxies, à la vraie échelle</span>
+    </button>
+
+    <div class="q-card q-card--sky" aria-disabled="true">
+      <svg class="q-card__art" viewBox="0 0 320 120" aria-hidden="true">
+        <g fill="#fff" opacity=".5"><circle cx="148" cy="62" r="24"/><circle cx="178" cy="50" r="30"/><circle cx="210" cy="64" r="22"/><rect x="130" y="62" width="100" height="24" rx="12"/></g>
+        <path d="M20 74 L150 64" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+        <g opacity=".95">
+          <path d="M190 58 L310 22 L310 32 Z" fill="#ff4b4b"/><path d="M190 59 L310 32 L310 42 Z" fill="#ff9a2a"/><path d="M190 60 L310 42 L310 52 Z" fill="#ffe14a"/>
+          <path d="M190 61 L310 52 L310 62 Z" fill="#4cd16a"/><path d="M190 62 L310 62 L310 72 Z" fill="#3a9bff"/><path d="M190 63 L310 72 L310 82 Z" fill="#8a5cff"/>
+        </g>
+        <path d="M170 18 L212 96 L128 96 Z" fill="#dff3ff" fill-opacity=".55" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="q-card__title">D’où viennent les couleurs du ciel ?</span>
+      <span class="q-card__soon">Prochainement…</span>
+    </div>
   </div>
 </section>
 
 <div id="ui" hidden>
-  <div id="tags" aria-hidden="true"></div>
   <button type="button" id="quit" aria-label="Revenir au menu">✕</button>
   <div id="lvl" aria-live="polite"></div>
   <nav id="gauge" aria-label="Échelles"></nav>
   <div id="legend" aria-label="Légende"></div>
-  <div id="scale" aria-label="Échelle"><span id="scale-v"></span><i></i></div>
-  <p id="hint">Molette ou pincement pour zoomer · glisse pour tourner autour · touche une étape à droite pour y voyager</p>
-  <div id="load" hidden>Préparation des modèles…</div>
+  <div id="scale" aria-label="Échelle"><span id="scale-v"></span><i></i><span id="scale-ly" hidden><span id="scale-ly-v"></span><button type="button" id="ly-q" class="q-badge" aria-label="Qu’est-ce qu’une année-lumière ?">?</button></span></div>
+  <p id="hint">Glisse vers le haut, pince l’écran ou utilise la molette pour dézoomer · touche une étape sur la droite pour y voyager</p>
+  <div id="load" hidden>Préparation du voyage…</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<div class="pop-overlay" id="ly-pop" hidden>
+  <div class="pop-card" role="dialog" aria-modal="true" aria-labelledby="ly-title">
+    <div class="pop-head">
+      <svg class="pop-ico" viewBox="0 0 84 70" aria-hidden="true">
+        <defs><radialGradient id="ly-sun"><stop offset="0" stop-color="#fff6c8"/><stop offset=".5" stop-color="#ffc23a"/><stop offset="1" stop-color="#f06a10"/></radialGradient></defs>
+        <circle cx="16" cy="35" r="10" fill="url(#ly-sun)"/>
+        <path d="M30 35h36" stroke="#f2b33a" stroke-width="3" stroke-dasharray="5 4" stroke-linecap="round"/><path d="M62 29l7 6-7 6" fill="none" stroke="#f2b33a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="24" font-size="11" font-weight="800" text-anchor="middle" fill="#4E5A66">1 an</text>
+        <circle cx="74" cy="35" r="4" fill="#cfd6f5"/>
+      </svg>
+      <h2 class="pop-title" id="ly-title">Qu’est-ce qu’une année-lumière ?</h2>
+    </div>
+    <div class="pop-body">
+      <p>Rien ne va plus vite que la lumière : elle parcourt <b>300&nbsp;000&nbsp;km chaque seconde</b>. En une seule seconde, elle pourrait faire 7 fois le tour de la Terre !</p>
+      <p>Une <b>année-lumière</b>, c’est la distance que parcourt la lumière en un an : environ <b>9&nbsp;500&nbsp;milliards de km</b>. Attention, malgré son nom, ce n’est pas une durée : c’est une <b>distance</b>.</p>
+      <p>Temps que met la lumière pour nous arriver :</p>
+      <dl class="fiche">
+        <dt>de la Lune</dt><dd>1,3 seconde</dd>
+        <dt>du Soleil</dt><dd>8 minutes</dd>
+        <dt>de Proxima du Centaure</dt><dd>4,2 ans : elle est à 4,2 années-lumière</dd>
+        <dt>d’Andromède</dt><dd>2,5 millions d’années</dd>
+      </dl>
+      <p>Regarder loin, c’est donc regarder dans le passé : on voit Andromède telle qu’elle était il y a 2,5 millions d’années !</p>
+      <button type="button" class="pop-btn" id="ly-ok">J’ai compris</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/home.js"></script>
 <script src="js/land.js"></script>
-<script src="js/core.js"></script>
-<script src="js/models-micro.js"></script>
-<script src="js/models-macro.js"></script>
-<script src="js/app.js"></script>
+<script src="js/core2d.js"></script>
+<script src="js/levels-micro2d.js"></script>
+<script src="js/levels-macro2d.js"></script>
+<script src="js/app2d.js"></script>
 </body></html>
