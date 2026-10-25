@@ -7,14 +7,14 @@ canvas{display:block;touch-action:none}#c{position:fixed;inset:0;width:100%;heig
 [hidden]{display:none!important}
 button{font-family:var(--font-body);-webkit-user-select:none;user-select:none}
 
-/* accueil : fond clair couvert de points d'interrogation, une carte par question */
+/* accueil : fond vert pomme pastel couvert de points d'interrogation clairs et sombres, une carte par question */
 #start{position:fixed;inset:0;z-index:30;overflow:auto;display:flex;justify-content:center;
-  padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(32px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#f7f3ff,#e6eeff)}
+  padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(32px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#EAF7D6,#D6EFBE)}
 #qbg{position:fixed;inset:0;overflow:hidden;pointer-events:none}
 #qbg span{position:absolute;font-weight:700;line-height:1;user-select:none}
 .start-in{position:relative;width:100%;max-width:520px;margin:auto 0}
-.app-title{font-family:var(--font-display);font-weight:700;font-size:clamp(1.8rem,7vw,2.5rem);line-height:1.12;text-align:center;margin:14px 0 10px;color:var(--ink)}
-.app-subtitle{text-align:center;color:var(--ink-soft);font-weight:700;font-size:1rem;line-height:1.35;margin:0 auto 26px;max-width:34ch}
+.app-title{font-family:var(--font-display);font-weight:700;font-size:clamp(1.8rem,7vw,2.5rem);line-height:1.12;text-align:center;margin:14px 0 10px;color:#24502E}
+.app-subtitle{text-align:center;color:#4E6E48;font-weight:700;font-size:1rem;line-height:1.35;margin:0 auto 26px;max-width:34ch}
 .q-card{display:flex;flex-direction:column;align-items:stretch;width:100%;margin:0 0 22px;padding:0 0 18px;border:none;border-radius:var(--radius-lg);overflow:hidden;
   text-align:left;color:#fff;font-family:var(--font-body);box-shadow:0 6px 0 var(--c-dark),0 12px 20px rgba(0,0,0,.22)}
 .q-card__art{display:block;width:100%;height:auto}
@@ -24,8 +24,8 @@ button{font-family:var(--font-body);-webkit-user-select:none;user-select:none}
 button.q-card{cursor:pointer;transition:transform .12s,box-shadow .12s}
 button.q-card:active{transform:translateY(4px);box-shadow:0 2px 0 var(--c-dark),0 6px 12px rgba(0,0,0,.22)}
 .q-card--sizes{--c-dark:#04051a;background:linear-gradient(180deg,#252c6b,#070a1f)}
-.q-card--sky{--c-dark:#163a78;background:linear-gradient(135deg,#8fd0ff,#1d4e9e 85%);cursor:default}
-.q-card:focus-visible{outline:3px solid #7B4DAE;outline-offset:3px}
+.q-card--sky{--c-dark:#0e1430;background:#1c2547;cursor:default}
+.q-card:focus-visible{outline:3px solid #2F5A27;outline-offset:3px}
 #gauge button:focus-visible,#quit:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 /* exploration */
