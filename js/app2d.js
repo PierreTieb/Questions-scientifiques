@@ -115,7 +115,7 @@ cv.onpointermove=e=>{const o=Pt.get(e.pointerId);if(!o)return;
 cv.onpointerup=cv.onpointercancel=e=>{Pt.delete(e.pointerId);pd=0};
 addEventListener('keydown',e=>{if($('ui').hidden||!lyPop.hidden)return;if(e.key=='-'||e.key=='ArrowDown')zoom(.25);if(e.key=='+'||e.key=='ArrowUp')zoom(-.25)});
 
-$('go').onclick=()=>{$('start').hidden=true;$('ui').hidden=false;$('load').hidden=false;
+$('go').onclick=()=>{$('start').hidden=true;$('room').hidden=true;$('ui').hidden=false;$('load').hidden=false;
   setTimeout(()=>{build();$('load').hidden=true;u=M[0];p=pT=vel=0;fl=null;tp=performance.now();if(!run){run=1;frame()}},30)};
 /* fenêtre « Qu'est-ce qu'une année-lumière ? » */
 const lyPop=$('ly-pop'),lyOpen=o=>{lyPop.hidden=!o;if(o)$('ly-ok').focus();else $('ly-q').focus()};

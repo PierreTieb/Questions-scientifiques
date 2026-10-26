@@ -481,7 +481,9 @@ function build(){if(built)return;built=1;
    au centre, le mur d'en face occupe 74 % de l'écran et l'on voit un peu des murs voisins, du plafond et du plancher. Pour regarder un mur, la caméra avance de DIN
    vers lui, jusqu'à ce qu'il remplisse l'écran ; au repos, il est alors affiché à plat (agrandi de 1/SV) pour que les clics marchent partout */
 const SV=.74;let L=0,HW=0,DIN=0;
-function layout(){W=innerWidth;H=innerHeight;L=SV*W;HW=SV*H;P=L/2;DIN=P*(1-SV);scene.style.perspective=P+'px';box.style.setProperty('--fs',1/SV);
+/* taille réelle de la zone d'affichage (sur téléphone, elle n'est à jour qu'un peu après l'événement de rotation) */
+const vpW=()=>document.documentElement.clientWidth||innerWidth,vpH=()=>document.documentElement.clientHeight||innerHeight;
+function layout(){W=vpW();H=vpH();L=SV*W;HW=SV*H;P=L/2;DIN=P*(1-SV);scene.style.perspective=P+'px';box.style.setProperty('--fs',1/SV);
   const size=(e,w,h)=>{e.style.width=w+'px';e.style.height=h+'px';e.style.left=(W-w)/2+'px';e.style.top=(H-h)/2+'px'};
   box.querySelectorAll('.wall').forEach((w,i)=>{size(w,L,HW);w.style.transform=`rotateY(${-90*i}deg) translateZ(${-L/2}px)`});
   box.querySelectorAll('.floor,.ceil').forEach((f,i)=>{size(f,L,L);f.style.transform=i?`translateY(${-HW/2}px) rotateX(-90deg)`:`translateY(${HW/2}px) rotateX(90deg)`});
@@ -548,11 +550,19 @@ const portrait=matchMedia('(orientation: portrait)'),rot=$('room-rot');
 portrait.addEventListener('change',()=>{if(!portrait.matches)rot.hidden=true});rot.onclick=()=>rot.hidden=true;
 
 /* ---------- entrée, sortie, animations (au centre de la pièce, les murs visibles s'animent aussi) ---------- */
-function loop(now){raf=requestAnimationFrame(loop);if(document.hidden)return;const all=mode=='room';if(all||cur==0)stepArrows(box.querySelector('#r-arrows'),now);if(all||cur==1){stepBreath(now);stepSky(now)}else sLast=0}
+function loop(now){raf=requestAnimationFrame(loop);if(document.hidden)return;
+  /* l'écran a changé de taille (rotation du téléphone) : on refait la mise en page, même si l'événement est arrivé trop tôt */
+  if(vpW()!=W||vpH()!=H)layout();const all=mode=='room';if(all||cur==0)stepArrows(box.querySelector('#r-arrows'),now);if(all||cur==1){stepBreath(now);stepSky(now)}else sLast=0}
 function open(){build();$('start').hidden=true;room.hidden=false;zoomed=null;room.classList.remove('zoomed');mode='room';cur=0;ang=0;markCur();layout();ui();rot.hidden=!portrait.matches;if(!raf)raf=requestAnimationFrame(loop)}
-function close(){room.hidden=true;$('start').hidden=false;cancelAnimationFrame(raf);raf=0;if(zoomed)unzoom();pop.hidden=true;$('go-sky').focus()}
+/* en quittant, la pièce est entièrement démontée (elle sera reconstruite à la prochaine ouverture) : certains navigateurs mobiles gardaient sinon
+   l'image de la scène 3D à l'écran, qui réapparaissait ensuite derrière les autres pages */
+function close(){room.hidden=true;$('start').hidden=false;cancelAnimationFrame(raf);raf=0;zoomed=null;room.classList.remove('zoomed');pop.hidden=true;
+  box.innerHTML='';box.style.transform='';built=0;arrows=[];sArrows=[];DOTS=[];bCycle=-1;sLast=0;$('go-sky').focus({preventScroll:true})}
 $('go-sky').onclick=open;$('room-quit').onclick=()=>mode=='wall'?leave():close();
-addEventListener('resize',()=>{if(!room.hidden)layout()});
+/* les boutons de commande répondent à la position du doigt, même si le navigateur attribue le toucher à la scène 3D qui est dessous */
+room.addEventListener('click',e=>{const b=['room-quit','room-back','room-prev','room-next'].map($).find(b=>{if(b.hidden)return false;const r=b.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom});
+  if(b&&!b.contains(e.target)&&pop.hidden&&(rot.hidden||b.id=='room-quit')){e.stopPropagation();e.preventDefault();b.click()}},true);
+addEventListener('resize',()=>{if(!room.hidden)layout()});addEventListener('orientationchange',()=>{if(!room.hidden)setTimeout(layout,300)});
 addEventListener('keydown',e=>{if(room.hidden)return;if(e.key=='Escape'){if(!pop.hidden)closeNote();else if(zoomed)unzoom();else if(mode=='wall')leave();return}
   if(!pop.hidden||zoomed||e.target.closest&&e.target.closest('button,.eye'))return;
   if(mode=='room'){if(e.key=='ArrowRight')turn(1);if(e.key=='ArrowLeft')turn(-1);if(e.key=='Enter'&&facing()<NAV)enter(facing());return}
