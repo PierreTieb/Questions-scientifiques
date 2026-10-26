@@ -122,3 +122,6 @@ const lyPop=$('ly-pop'),lyOpen=o=>{lyPop.hidden=!o;if(o)$('ly-ok').focus();else 
 $('ly-q').onclick=()=>lyOpen(1);$('ly-ok').onclick=()=>lyOpen(0);lyPop.onclick=e=>{if(e.target===lyPop)lyOpen(0)};
 addEventListener('keydown',e=>{if(e.key=='Escape'&&!lyPop.hidden)lyOpen(0)});
 $('quit').onclick=()=>{run=0;$('ui').hidden=true;$('start').hidden=false;$('hint').classList.remove('off')};
+/* la croix répond à la position du doigt, même si un navigateur mobile attribue le toucher au dessin qui est dessous */
+document.addEventListener('click',e=>{if($('ui').hidden||!lyPop.hidden)return;const q=$('quit'),r=q.getBoundingClientRect();
+  if(!q.contains(e.target)&&e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){e.stopPropagation();e.preventDefault();q.click()}},true);
