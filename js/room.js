@@ -31,17 +31,17 @@ const NOTES={
       <p>Chaque goutte se comporte comme un tout petit prisme : la lumière blanche du Soleil y entre (elle est déviée), se <b>réfléchit</b> sur le fond de la goutte, puis ressort (elle est encore déviée). À chaque passage, les couleurs se séparent un peu plus.</p>
       <p>Chaque couleur ressort avec un angle bien précis : environ <b>42°</b> pour le rouge et <b>40°</b> pour le violet. Ainsi, une goutte ne t’envoie qu’une seule couleur : le rouge te parvient des gouttes un peu plus hautes, le violet des gouttes un peu plus basses.</p>
       <p>Toutes les gouttes qui t’envoient du rouge sont sur un cercle autour du point opposé au Soleil : voilà pourquoi l’arc est <b>rond</b>, avec le rouge à l’extérieur et le violet à l’intérieur. Et ton voisin, un peu plus loin, voit son propre arc-en-ciel, fait d’autres gouttes !</p>`},
-  air:{t:'De quoi est fait l’air ?',s:'L’air est un mélange de gaz : surtout du diazote (78 %) et du dioxygène (21 %), un peu d’argon, et très peu de dioxyde de carbone (0,04 %).',
+  air:{t:'De quoi est fait l’air ?',s:'L’air est un mélange de gaz : 80 % de diazote, 18 % de dioxygène et 2 % de dioxyde de carbone.',
     l:`<p>L’air semble vide, mais il est rempli de <b>molécules</b> minuscules, invisibles même au microscope. Chaque molécule est un petit assemblage d’<b>atomes</b>, que l’on retrouve dans le tableau périodique des éléments : l’azote (N), l’oxygène (O), le carbone (C)…</p>
-      <dl class="fiche"><dt>Diazote N₂</dt><dd>2 atomes d’azote : 78 %</dd><dt>Dioxygène O₂</dt><dd>2 atomes d’oxygène : 21 %</dd><dt>Argon Ar</dt><dd>un atome seul : environ 1 %</dd><dt>Dioxyde de carbone CO₂</dt><dd>1 atome de carbone et 2 d’oxygène : 0,04 %</dd></dl>
-      <p>Sur <b>10 000 molécules</b> d’air, il y a environ 7 800 molécules de diazote, 2 100 de dioxygène, 90 d’argon… et seulement 4 de dioxyde de carbone ! L’air contient aussi un peu de vapeur d’eau, plus ou moins selon le temps qu’il fait.</p>
+      <dl class="fiche"><dt>Diazote N₂</dt><dd>2 atomes d’azote : 80 %</dd><dt>Dioxygène O₂</dt><dd>2 atomes d’oxygène : 18 %</dd><dt>Dioxyde de carbone CO₂</dt><dd>1 atome de carbone et 2 d’oxygène : 2 %</dd></dl>
+      <p>Sur <b>100 molécules</b> d’air, il y a donc 80 molécules de diazote, 18 de dioxygène et 2 de dioxyde de carbone. On néglige les autres gaz, très peu nombreux.</p>
       <p class="petit">Sur les dessins, chaque atome a une couleur conventionnelle : l’oxygène en rouge, l’azote en bleu, le carbone en gris foncé.</p>`},
   souffle:{t:'Respirer : le rôle des gaz',s:'Le dioxygène passe des poumons dans le sang : nos cellules l’utilisent et rejettent du dioxyde de carbone, qu’on expire. Le diazote entre et ressort sans changer.',
     l:`<p>À chaque inspiration, l’air descend par le nez, la trachée et les bronches jusqu’aux <b>poumons</b>.</p>
       <p><b>Le dioxygène</b> traverse la paroi très fine des poumons et passe dans le sang, qui l’apporte à toutes nos cellules. Les cellules s’en servent pour tirer de l’énergie des aliments, et elles rejettent un déchet : le <b>dioxyde de carbone</b>. Le sang le ramène aux poumons, et nous l’expirons.</p>
       <p><b>Le diazote</b>, lui, ne sert à rien à notre corps : il entre et ressort sans changer. Il est pourtant le gaz le plus abondant de l’air !</p>
-      <dl class="fiche"><dt>Air inspiré</dt><dd>21 % de dioxygène, 0,04 % de dioxyde de carbone</dd><dt>Air expiré</dt><dd>environ 16 % de dioxygène, 4 % de dioxyde de carbone</dd></dl>
-      <p class="petit">Sur l’animation, chaque inspiration fait entrer 100 molécules : 80 de diazote, 18 de dioxygène et 2 de dioxyde de carbone (on en a mis plus que la réalité pour qu’on les voie). Dans les poumons, 5 molécules de dioxygène sont remplacées par 5 de dioxyde de carbone.</p>`},
+      <dl class="fiche"><dt>Air inspiré</dt><dd>18 % de dioxygène, 2 % de dioxyde de carbone</dd><dt>Air expiré</dt><dd>13 % de dioxygène, 7 % de dioxyde de carbone</dd></dl>
+      <p class="petit">Sur l’animation, chaque inspiration fait entrer 100 molécules : 80 de diazote, 18 de dioxygène et 2 de dioxyde de carbone. Dans les poumons, 5 molécules de dioxygène sont remplacées par 5 de dioxyde de carbone.</p>`},
   bleu:{t:'Pourquoi le ciel est bleu',s:'Les molécules de l’air laissent passer la plupart des couleurs, mais dévient le bleu et le violet dans toutes les directions. Déplace l’œil : hors du rayon, il ne reçoit que du bleu !',
     l:`<p>La lumière blanche du Soleil contient toutes les couleurs (mur 1). Pour arriver jusqu’à nous, elle traverse l’air et ses milliards de milliards de molécules.</p>
       <p>Ces molécules sont si petites que la plupart des couleurs passent à côté sans être gênées. Mais le <b>bleu</b> et le <b>violet</b> sont <b>déviés</b> par les molécules et partent dans toutes les directions.</p>
@@ -156,9 +156,12 @@ function stepArrows(g,now){if(now>nextShot){nextShot=now+700;const D=bowPoint(BO
 
 /* ---------- construction des murs ---------- */
 const note=(k,x,y,w,r=0,cls='')=>`<div class="note ${cls}" data-note="${k}" role="button" tabindex="0" style="left:${x}px;top:${y}px;width:${w}px;transform:rotate(${r}deg)"><h3>${NOTES[k].t}</h3><p>${NOTES[k].s}</p></div>`;
-/* chaque cadre : position, taille, inclinaison, zone sur laquelle on zoome (le cadre et son texte) */
-const EL=[{id:'newton',z:[12,16,214,612]},{id:'soleil',z:[228,440,324,236]},{id:'prisme',z:[308,28,494,416]},{id:'arc',z:[800,226,392,442]},
-  {id:'air',z:[12,14,370,292]},{id:'souffle',z:[398,108,414,424]},{id:'bleu',z:[834,52,360,320]}];
+/* chaque cadre : zone sur laquelle on zoome (repère du mur : x, y, largeur, hauteur) */
+/* deux zooms possibles : z, le cadre seul (le texte s'ouvre d'un toucher) ; zt, le cadre et son texte ensemble (plus petit à l'écran sur téléphone).
+   ZOOM_TEXT choisit la version utilisée */
+const ZOOM_TEXT=false,
+  EL=[{id:'newton',z:[14,16,200,290],zt:[12,16,214,612]},{id:'soleil',z:[228,438,324,189],zt:[228,440,324,236]},{id:'prisme',z:[306,26,498,312],zt:[308,28,494,416]},{id:'arc',z:[798,224,396,305],zt:[800,226,392,442]},
+  {id:'air',z:[12,14,370,292],zt:[18,18,370,420]},{id:'souffle',z:[398,108,414,424],zt:[398,108,414,560]},{id:'bleu',z:[834,52,360,320],zt:[832,52,364,560]}];
 /* un seul fil rouge tendu, qui marque les étapes de l'enquête : Newton, le Soleil, le prisme, l'arc-en-ciel ; et les punaises qui tiennent les papiers */
 const STEPS=[[190,200],[262,458],[332,320],[822,370]],
   PINS=[...STEPS.map(p=>[...p,'#d63a2f']),[113,34,'#d63a2f'],[116,317,'#2f6bd6'],[334,48,'#d63a2f'],[776,48,'#d63a2f'],[550,382,'#e0a020'],[520,458,'#d63a2f'],[996,246,'#d63a2f'],[996,533,'#2f9e5e'],[996,35,'#e0a020']];
@@ -185,14 +188,14 @@ const MC={N:'#2F6BE0',O:'#E5413A',C:'#3b3f46'},
   atomDefs=Object.entries(MC).map(([k,c])=>`<radialGradient id="a-${k}" cx=".35" cy=".32" r=".7"><stop offset="0" stop-color="${mixh(c,'#ffffff',.6)}"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="${mixh(c,'#000000',.45)}"/></radialGradient>`).join(''),
   atom=(x,y,r,k)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#a-${k})"/>`;
 /* l'affiche : les trois molécules, leurs pourcentages, et une barre qui montre les proportions */
-function airSVG(){const M=[['Diazote','N₂','78 %',atom(41,78,17,'N')+atom(67,78,17,'N'),MC.N],['Dioxygène','O₂','21 %',atom(152,78,16,'O')+atom(177,78,16,'O'),MC.O],
-    ['Dioxyde de carbone','CO₂','0,04 %',atom(250,78,13,'O')+atom(292,78,13,'O')+atom(271,78,15,'C'),MC.C]],cx=[54,164,271];
+function airSVG(){const M=[['Diazote','N₂','80 %',atom(41,78,17,'N')+atom(67,78,17,'N'),MC.N],['Dioxygène','O₂','18 %',atom(152,78,16,'O')+atom(177,78,16,'O'),MC.O],
+    ['Dioxyde de carbone','CO₂','2 %',atom(250,78,13,'O')+atom(292,78,13,'O')+atom(271,78,15,'C'),MC.C]],cx=[54,164,271];
   return`<svg viewBox="0 0 330 230" aria-label="Les trois principaux gaz de l’air"><defs>${atomDefs}</defs><rect width="330" height="230" fill="#fbf8ef"/>
     <text class="po-t" x="316" y="28" text-anchor="end">L’air que tu respires</text>
     ${M.map(([n,f,p,a,c],i)=>`${a}<text class="po-n" x="${cx[i]}" y="118" text-anchor="middle">${n}</text><text class="po-f" x="${cx[i]}" y="134" text-anchor="middle">${f}</text><text class="po-p" x="${cx[i]}" y="162" text-anchor="middle" fill="${c}">${p}</text>`).join('')}
-    <rect x="20" y="180" width="226" height="16" fill="${MC.N}"/><rect x="246" y="180" width="61" height="16" fill="${MC.O}"/><rect x="307" y="180" width="3" height="16" fill="#9aa3ad"/>
+    <rect x="20" y="180" width="232" height="16" fill="${MC.N}"/><rect x="252" y="180" width="52.2" height="16" fill="${MC.O}"/><rect x="304.2" y="180" width="5.8" height="16" fill="${MC.C}"/>
     <rect x="20" y="180" width="290" height="16" fill="none" stroke="#2e3a46" stroke-width="1"/>
-    <text class="po-s" x="20" y="214">Argon et autres gaz : environ 1 %</text></svg>`}
+    <text class="po-s" x="20" y="214">Sur 100 molécules d’air : 80 N₂, 18 O₂, 2 CO₂</text></svg>`}
 /* tableau périodique coloré par familles, posé de biais sur le coin de l'affiche ; l'azote, l'oxygène et le carbone sont mis en valeur */
 function mendelSVG(){const C=8,X0=4,Y0=14;let s='';
   const col=(r,g)=>{if(r==1)return g==1?'#9be7ff':'#ce93d8';if(g==1)return'#ff9e80';if(g==2)return'#ffd180';if(g==18)return'#ce93d8';if(g==17)return'#80deea';if(g<=12)return'#b39ddb';
@@ -256,7 +259,7 @@ function stepBreath(now){const svg=box.querySelector('.body-svg');if(!svg||!DOTS
 const SW=340,SH=300,SUN2=[28,150],LAY=[112,250],BEAM=[136,164],
   /* part de rouge, vert et bleu de chaque couleur : les sept ensemble donnent du blanc */
   LW=[[1,.1,0],[1,.5,0],[1,1,0],[0,1.2,.15],[0,.5,1],[.05,.15,1],[.3,0,1]],LS=[0,1,2].map(i=>LW.reduce((s,w)=>s+w[i],0));
-function skySVG(){let mol='';for(let i=0;i<64;i++){const x=rndIn(LAY[0]+6,LAY[1]-6),y=rndIn(30,290),a=Math.random()*180,k=Math.random()<.78?'N':'O';
+function skySVG(){let mol='';for(let i=0;i<64;i++){const x=rndIn(LAY[0]+6,LAY[1]-6),y=rndIn(30,290),a=Math.random()*180,k=Math.random()<.8?'N':'O';
     mol+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(0)})"><circle cx="-2" r="2.6" fill="url(#a-${k})"/><circle cx="2" r="2.6" fill="url(#a-${k})"/></g>`}
   return`<svg viewBox="0 0 ${SW} ${SH}" class="sky-svg" aria-label="La lumière du Soleil traverse l’air : déplace l’œil">
   <defs><radialGradient id="s2-sun"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fffbe8"/><stop offset="1" stop-color="#fff2c8" stop-opacity="0"/></radialGradient>
@@ -332,7 +335,7 @@ function setAng(a,anim=1){ang=a;box.classList.toggle('drag',!anim);box.style.tra
 function go(i){if(zoomed)unzoom();cur=Math.max(0,Math.min(NAV-1,i));setAng(90*cur);box.querySelectorAll('.wall').forEach((w,k)=>w.classList.toggle('cur',k==cur));ui()}
 function ui(){$('room-prev').hidden=cur<=0||!!zoomed;$('room-next').hidden=cur>=NAV-1||!!zoomed;$('room-back').hidden=!zoomed}
 /* zoom vers un cadre : il vient au centre et remplit l'écran ; transition douce */
-function zoomTo(el,now){const z=EL[+el.dataset.el].z,wi=el.closest('.wall-in'),k=Math.min(W*.94/z[2],H*.88/z[3]),tx=W/2-(z[0]+z[2]/2)*k,ty=H/2-(z[1]+z[3]/2)*k;
+function zoomTo(el,now){const z=EL[+el.dataset.el][ZOOM_TEXT?'zt':'z'],wi=el.closest('.wall-in'),k=Math.min(W*.94/z[2],H*.88/z[3]),tx=W/2-(z[0]+z[2]/2)*k,ty=H/2-(z[1]+z[3]/2)*k;
   if(now){wi.style.transition='none'}wi.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;if(now){void wi.offsetWidth;wi.style.transition=''}
   box.querySelectorAll('.el.on').forEach(e=>e.classList.remove('on'));el.classList.add('on');zoomed=el;room.classList.add('zoomed');ui()}
 function unzoom(){if(!zoomed)return;const wi=zoomed.closest('.wall-in');wi.style.transform=`translate(${K[1]}px,${K[2]}px) scale(${K[0]})`;zoomed.classList.remove('on');zoomed=null;room.classList.remove('zoomed');ui()}
