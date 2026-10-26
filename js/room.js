@@ -110,46 +110,52 @@ function rainbowSVG(){let rain='',crowd='',bow='',rays='';
   for(let i=0;i<12;i++)rays+=`<path d="M0 -26V-36" transform="rotate(${i*30})"/>`;
   return`<svg viewBox="0 0 ${RW} ${RH}" aria-label="Formation d’un arc-en-ciel"><defs><linearGradient id="r-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa8e0"/><stop offset="1" stop-color="#d6ebf7"/></linearGradient>
     <radialGradient id="r-sun"><stop offset="0" stop-color="#fffbe6"/><stop offset=".45" stop-color="#ffe066"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
-    <clipPath id="r-rain"><rect x="${RAINX[0]-20}" y="${RAINY[0]}" width="${RAINX[1]-RAINX[0]+30}" height="${RAINY[1]-RAINY[0]+20}"/></clipPath></defs>
+    <linearGradient id="r-spec" x1="0" y1="0" x2="0" y2="1">${specStops}</linearGradient><clipPath id="r-rain"><rect x="${RAINX[0]-20}" y="${RAINY[0]}" width="${RAINX[1]-RAINX[0]+30}" height="${RAINY[1]-RAINY[0]+20}"/></clipPath></defs>
     <rect width="${RW}" height="${RH}" fill="url(#r-sky)"/>
-    <g clip-path="url(#r-rain)"><rect x="${RAINX[0]-20}" y="${RAINY[0]}" width="${RAINX[1]-RAINX[0]+30}" height="${RAINY[1]-RAINY[0]+20}" fill="#8796a6" opacity=".35"/><g class="r-bow" fill="none" stroke-width="3" opacity=".55">${bow}</g><g class="r-drops" stroke="#e6f1fb" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="5 13">${rain}</g></g>
+    <g clip-path="url(#r-rain)"><g class="r-bow" fill="none" stroke-width="3" opacity=".55">${bow}</g><g class="r-drops" stroke="#e6f1fb" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="5 13">${rain}</g></g>
     <g fill="#8c97a3"><circle cx="268" cy="80" r="22"/><circle cx="300" cy="64" r="30"/><circle cx="336" cy="78" r="24"/><circle cx="360" cy="92" r="16"/><rect x="250" y="80" width="122" height="22" rx="11"/></g>
     <g fill="#a7b1bc"><circle cx="292" cy="58" r="20"/><circle cx="322" cy="62" r="16"/></g>
     <rect y="${CROWD[1]+4}" width="${RW}" height="${RH-CROWD[1]-4}" fill="#78b356"/><rect y="${CROWD[1]+4}" width="${RW}" height="3" fill="#5f9a42"/>
     <g transform="translate(${SUN[0]} ${SUN[1]})"><circle r="44" fill="url(#r-sun)" class="r-glow"/><g class="r-rays" stroke="#ffd23a" stroke-width="3" stroke-linecap="round">${rays}</g><circle r="19" fill="#ffe25a"/><circle r="19" fill="none" stroke="#ffb22e" stroke-width="2"/></g>
     ${crowd}<g id="r-arrows"></g>
     <g class="p-lbl r-lbl"><text x="${SUN[0]}" y="${SUN[1]+52}" text-anchor="middle">Soleil (dans ton dos)</text><text x="306" y="36" text-anchor="middle">Nuage de pluie</text><text x="${CROWD[0]}" y="${RH-12}" text-anchor="middle">Toi et la foule</text></g></svg>`}
-/* flèches : une flèche blanche part du Soleil vers une goutte de l'arc ; à son arrivée, sept petites flèches colorées repartent vers la foule, chacune avec son angle */
+/* flèches : une flèche blanche part du Soleil vers une goutte de l'arc ; arrivée dans la goutte, elle fait demi-tour (la lumière s'y réfléchit)
+   et se sépare en sept flèches colorées, plus petites, qui repartent vers la foule, chacune avec un angle un peu différent */
 const ARW='M-7 -2.4H2V-5L8 0L2 5V2.4H-7Z';let arrows=[],nextShot=0;
 function bowPoint(r){for(;;){const a=.62+Math.random()*.42,x=BOWC[0]+Math.cos(a)*r,y=BOWC[1]-Math.sin(a)*r;if(x>RAINX[0]+6&&x<RAINX[1]-4&&y>RAINY[0]+18&&y<RAINY[1]-12)return[x,y]}}
-function spawn(g,x0,y0,x1,y1,dur,col,sc,now,next){const e=document.createElementNS(NS,'path');e.setAttribute('d',ARW);e.setAttribute('fill',col);e.setAttribute('stroke','rgba(30,45,70,.55)');e.setAttribute('stroke-width',sc<1?.5:.8);g.appendChild(e);
-  arrows.push({e,x0,y0,x1,y1,t0:now,dur,sc,a:Math.atan2(y1-y0,x1-x0)*180/Math.PI,next})}
-function stepArrows(g,now){if(now>nextShot){nextShot=now+650;const D=bowPoint(BOWR);spawn(g,SUN[0]+20,SUN[1]+8,D[0],D[1],1700,'#ffffff',1.15,now,D)}
-  arrows=arrows.filter(o=>{const t=(now-o.t0)/o.dur;if(t>=1){o.e.remove();
-      if(o.next){const D=o.next;SPEC.forEach((c,k)=>spawn(g,D[0],D[1],CROWD[0]+(k-3)*9,CROWD[1]-12+(k-3)*1.5,1500+k*40,c,.62,now,null))}return false}
-    const x=o.x0+(o.x1-o.x0)*t,y=o.y0+(o.y1-o.y0)*t,f=o.next?1:Math.min(1,t*6,(1-t)*5);o.e.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${o.a.toFixed(1)}) scale(${o.sc})`);o.e.setAttribute('opacity',f.toFixed(2));return true})}
+function arrowEl(g,col,sc){const e=document.createElementNS(NS,'path');e.setAttribute('d',ARW);e.setAttribute('fill',col);e.setAttribute('stroke','rgba(30,45,70,.55)');e.setAttribute('stroke-width',sc<1?.5:.8);g.appendChild(e);return e}
+const deg=(x0,y0,x1,y1)=>Math.atan2(y1-y0,x1-x0)*180/Math.PI;
+function stepArrows(g,now){if(now>nextShot){nextShot=now+700;const D=bowPoint(BOWR),x0=SUN[0]+20,y0=SUN[1]+8;
+    arrows.push({k:'go',e:arrowEl(g,'#ffffff',1.15),x0,y0,x1:D[0],y1:D[1],t0:now,dur:1700,sc:1.15,a:deg(x0,y0,D[0],D[1])})}
+  const add=[];arrows=arrows.filter(o=>{const t=(now-o.t0)/o.dur;
+    if(o.k=='turn'){/* demi-tour sur place : la flèche pivote vers la foule en prenant les couleurs */
+      const u=Math.min(1,t),a=o.a0+(o.a1-o.a0)*u*u*(3-2*u);o.e.setAttribute('transform',`translate(${o.x.toFixed(1)} ${o.y.toFixed(1)}) rotate(${a.toFixed(1)}) scale(1.15)`);
+      if(u>.5)o.e.setAttribute('fill','url(#r-spec)');if(t<1)return true;o.e.remove();
+      SPEC.forEach((c,k)=>{const tx=CROWD[0]+(k-3)*10,ty=CROWD[1]-14+(k-3)*1.2;add.push({k:'back',e:arrowEl(g,c,.78),x0:o.x,y0:o.y,x1:tx,y1:ty,t0:now,dur:1500,sc:.78,a:deg(o.x,o.y,tx,ty)})});return false}
+    if(t>=1){if(o.k=='go'){add.push({k:'turn',e:o.e,x:o.x1,y:o.y1,a0:o.a,a1:o.a+((deg(o.x1,o.y1,CROWD[0],CROWD[1]-14)-o.a+540)%360-180),t0:now,dur:380});return false}o.e.remove();return false}
+    const x=o.x0+(o.x1-o.x0)*t,y=o.y0+(o.y1-o.y0)*t,f=o.k=='go'?1:Math.min(1,(1-t)*6);o.e.setAttribute('transform',`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${o.a.toFixed(1)}) scale(${o.sc})`);o.e.setAttribute('opacity',f.toFixed(2));return true});
+  arrows.push(...add)}
 
 /* ---------- construction des murs ---------- */
 const note=(k,x,y,w,r=0,cls='')=>`<div class="note ${cls}" data-note="${k}" role="button" tabindex="0" style="left:${x}px;top:${y}px;width:${w}px;transform:rotate(${r}deg)"><h3>${NOTES[k].t}</h3><p>${NOTES[k].s}</p></div>`;
 /* chaque cadre : position, taille, inclinaison, zone sur laquelle on zoome (le cadre et son texte) */
-const EL=[{id:'newton',x:30,y:30,w:175,h:262,r:-2,z:[12,18,246,462]},{id:'soleil',x:300,y:428,w:330,h:180,r:0,z:[288,416,354,262]},
-  {id:'prisme',x:250,y:52,w:490,h:296,r:0,z:[238,40,514,384]},{id:'arc',x:790,y:228,w:385,h:280,r:.6,z:[776,214,414,446]}];
-/* punaises (et couleurs) et fil rouge entre elles, comme sur un tableau d'enquête */
-const PINS=[[117,37,'#d63a2f'],[133,310,'#2f6bd6'],[264,60,'#d63a2f'],[726,60,'#d63a2f'],[495,363,'#e0a020'],[465,436,'#d63a2f'],[806,236,'#d63a2f'],[982,523,'#2f9e5e'],[985,41,'#e0a020']],
-  THREADS=[[0,2,26],[4,5,14],[3,6,30]];
-function wall1(){const P=i=>PINS[i];
+const EL=[{id:'newton',z:[12,16,214,612]},{id:'soleil',z:[228,440,324,236]},{id:'prisme',z:[308,28,494,416]},{id:'arc',z:[800,226,392,442]}];
+/* un seul fil rouge tendu, qui marque les étapes de l'enquête : Newton, le Soleil, le prisme, l'arc-en-ciel ; et les punaises qui tiennent les papiers */
+const STEPS=[[190,200],[262,458],[332,320],[822,370]],
+  PINS=[...STEPS.map(p=>[...p,'#d63a2f']),[113,34,'#d63a2f'],[116,317,'#2f6bd6'],[334,48,'#d63a2f'],[776,48,'#d63a2f'],[550,382,'#e0a020'],[520,458,'#d63a2f'],[996,246,'#d63a2f'],[996,533,'#2f9e5e'],[996,35,'#e0a020']];
+function wall1(){const d='M'+STEPS.map(p=>p.join(' ')).join('L');
   return`<div class="board"></div>
-  <div class="card-title" style="left:790px;top:36px;width:385px;transform:rotate(-.8deg)"><span>Mur 1 / 4</span><h2>${TITLES[0]}</h2><p>Suis le fil rouge. Touche un cadre pour t’en approcher, un texte pour le lire en grand.</p></div>
-  <div class="el polaroid" data-el="0" role="button" tabindex="0" aria-label="Portrait d’Isaac Newton" style="left:30px;top:30px;width:175px;transform:rotate(-2deg)"><img src="img/newton.jpg" alt="Isaac Newton, levant le pouce, une pomme accrochée à l’arbre derrière lui" width="155" height="232"><span>Isaac Newton</span></div>
-  ${note('newton',22,306,222,1.2)}
-  <div class="el exp" data-el="2" role="button" tabindex="0" aria-label="Expérience du prisme" style="left:250px;top:52px;width:490px;height:296px">${prismSVG()}</div>
-  ${note('prisme',250,358,490,-.4,'note--wide')}
-  <div class="el painting" data-el="1" role="button" tabindex="0" aria-label="Tableau : le Soleil et d’autres étoiles" style="left:300px;top:428px;width:330px;height:180px">${starsSVG()}</div>
-  ${note('soleil',300,616,330,0,'note--plaque')}
-  <div class="el exp exp--sky" data-el="3" role="button" tabindex="0" aria-label="Formation d’un arc-en-ciel" style="left:790px;top:228px;width:385px;height:280px;transform:rotate(.6deg)">${rainbowSVG()}</div>
-  ${note('arc',790,518,385,-.6)}
+  <div class="card-title" style="left:812px;top:30px;width:368px;transform:rotate(-.8deg)"><span>Mur 1 / 4</span><h2>${TITLES[0]}</h2><p>Suis le fil rouge. Touche un cadre pour t’en approcher, un texte pour le lire en grand.</p></div>
+  <div class="el polaroid" data-el="0" role="button" tabindex="0" aria-label="Portrait d’Isaac Newton" style="left:28px;top:28px;width:170px;transform:rotate(-2deg)"><img src="img/newton.jpg" alt="Isaac Newton, levant le pouce, une pomme accrochée à l’arbre derrière lui" width="150" height="225"><span>Isaac Newton</span></div>
+  ${note('newton',20,312,192,1.2)}
+  <div class="el exp" data-el="2" role="button" tabindex="0" aria-label="Expérience du prisme" style="left:320px;top:40px;width:470px;height:284px">${prismSVG()}</div>
+  ${note('prisme',330,378,440,-.4,'note--wide')}
+  <div class="el painting" data-el="1" role="button" tabindex="0" aria-label="Tableau : le Soleil et d’autres étoiles" style="left:240px;top:450px;width:300px;height:165px">${starsSVG()}</div>
+  ${note('soleil',240,622,300,0,'note--plaque')}
+  <div class="el exp exp--sky" data-el="3" role="button" tabindex="0" aria-label="Formation d’un arc-en-ciel" style="left:812px;top:238px;width:368px;height:277px;transform:rotate(.6deg)">${rainbowSVG()}</div>
+  ${note('arc',812,528,368,-.6)}
   <svg class="threads" viewBox="0 0 ${DW} ${DH}" aria-hidden="true"><defs><radialGradient id="pin-hl" cx=".35" cy=".3"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-    ${THREADS.map(([a,b,s])=>{const A=P(a),B=P(b),d=`M${A[0]} ${A[1]}Q${(A[0]+B[0])/2} ${(A[1]+B[1])/2+s} ${B[0]} ${B[1]}`;return`<path d="${d}" stroke="rgba(0,0,0,.28)" stroke-width="3" fill="none" transform="translate(2 3)"/><path d="${d}" stroke="#c4161c" stroke-width="2.2" fill="none"/><path d="${d}" stroke="#ff6a5a" stroke-width=".7" fill="none" opacity=".7"/>`}).join('')}
+    <path d="${d}" stroke="rgba(0,0,0,.28)" stroke-width="3" fill="none" stroke-linejoin="round" transform="translate(2 3)"/><path d="${d}" stroke="#c4161c" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="${d}" stroke="#ff6a5a" stroke-width=".7" fill="none" stroke-linejoin="round" opacity=".7"/>
     ${PINS.map(([x,y,c])=>`<ellipse cx="${x+3}" cy="${y+4}" rx="6.5" ry="4" fill="rgba(0,0,0,.3)"/><circle cx="${x}" cy="${y}" r="7" fill="${c}"/><circle cx="${x}" cy="${y}" r="7" fill="url(#pin-hl)"/><circle cx="${x}" cy="${y}" r="7" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/>`).join('')}</svg>`}
 const empty=i=>`<div class="board"></div><div class="card-title card-title--soon" style="left:${DW/2-210}px;top:${DH/2-80}px;width:420px"><span>Mur ${i+1} / 4</span><h2>Bientôt…</h2><p>La suite de l’enquête sera affichée ici.</p></div>`;
 
@@ -168,10 +174,10 @@ function layout(){W=innerWidth;H=innerHeight;scene.style.perspective=1.3*W+'px';
   box.querySelectorAll('.wall').forEach((w,i)=>w.style.transform=`rotateY(${-90*i}deg) translateZ(${-W/2}px)`);
   const m=Math.min(W,H)*.025,k=Math.min((W-2*m)/DW,(H-2*m)/DH);K=[k,(W-DW*k)/2,(H-DH*k)/2];
   box.querySelectorAll('.wall-in').forEach(w=>{w.style.transition='none';w.style.transform=`translate(${K[1]}px,${K[2]}px) scale(${k})`;void w.offsetWidth;w.style.transition=''});
-  if(zoomed)zoomTo(zoomed,1);if(!drag)setAng(90*cur,0)}
+  if(zoomed)zoomTo(zoomed,1);setAng(90*cur,0)}
 function setAng(a,anim=1){ang=a;box.classList.toggle('drag',!anim);box.style.transform=`translateZ(${W/2}px) rotateY(${a}deg)`}
-function go(i){if(zoomed)unzoom();cur=Math.max(0,Math.min(NAV-1,i));setAng(90*cur);ui()}
-function ui(){$('room-label').textContent=`Mur ${cur+1} / 4 · ${TITLES[cur]}`;$('room-prev').hidden=cur<=0||!!zoomed;$('room-next').hidden=cur>=NAV-1||!!zoomed;$('room-back').hidden=!zoomed}
+function go(i){if(zoomed)unzoom();cur=Math.max(0,Math.min(NAV-1,i));setAng(90*cur);box.querySelectorAll('.wall').forEach((w,k)=>w.classList.toggle('cur',k==cur));ui()}
+function ui(){$('room-prev').hidden=cur<=0||!!zoomed;$('room-next').hidden=cur>=NAV-1||!!zoomed;$('room-back').hidden=!zoomed}
 /* zoom vers un cadre : il vient au centre et remplit l'écran ; transition douce */
 function zoomTo(el,now){const z=EL[+el.dataset.el].z,wi=el.closest('.wall-in'),k=Math.min(W*.94/z[2],H*.88/z[3]),tx=W/2-(z[0]+z[2]/2)*k,ty=H/2-(z[1]+z[3]/2)*k;
   if(now){wi.style.transition='none'}wi.style.transform=`translate(${tx}px,${ty}px) scale(${k})`;if(now){void wi.offsetWidth;wi.style.transition=''}
@@ -186,15 +192,8 @@ function eyeDrag(svg){const eye=svg.querySelector('#p-eye'),toSvg=e=>{const r=sv
   eye.addEventListener('keydown',e=>{const d={ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,-10],ArrowDown:[0,10]}[e.key];if(!d)return;e.preventDefault();e.stopPropagation();placeEye(svg,+eye.dataset.x+d[0],+eye.dataset.y+d[1])});
   svg.addEventListener('click',e=>{if(zoomed&&zoomed.contains(svg)){e.stopPropagation();const[x,y]=toSvg(e);placeEye(svg,x,y)}})}
 
-/* ---------- glisser pour tourner ; toucher pour s'approcher ---------- */
-let sx=0,sy=0,drag=0,down=0,moved=0;
-scene.addEventListener('pointerdown',e=>{if(e.button)return;down=1;drag=0;moved=0;sx=e.clientX;sy=e.clientY});
-scene.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.hypot(dx,dy)>8)moved=1;
-  if(!drag&&!zoomed&&Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.2){drag=1;scene.setPointerCapture(e.pointerId)}
-  if(drag){let a=90*cur-dx/W*90;const mx=90*(NAV-1);if(a<0)a*=.3;if(a>mx)a=mx+(a-mx)*.3;setAng(a,0)}});
-const end=e=>{if(!down)return;down=0;if(drag){const dx=e.clientX-sx;go(dx<-W*.14?cur+1:dx>W*.14?cur-1:cur)}drag=0};
-scene.addEventListener('pointerup',end);scene.addEventListener('pointercancel',end);
-scene.addEventListener('click',e=>{if(moved)return;const n=e.target.closest('.note');if(n){openNote(n.dataset.note);return}
+/* ---------- toucher un cadre pour s'en approcher, un texte pour le lire ; on change de mur avec les flèches ---------- */
+scene.addEventListener('click',e=>{const n=e.target.closest('.note');if(n){openNote(n.dataset.note);return}
   const el=e.target.closest('.el');if(el&&el!==zoomed){zoomTo(el);return}if(!el&&zoomed)unzoom()});
 scene.addEventListener('keydown',e=>{if(e.key!='Enter'&&e.key!=' ')return;const n=e.target.closest('.note'),el=e.target.closest('.el');if(n){e.preventDefault();openNote(n.dataset.note)}else if(el&&!e.target.closest('.eye')){e.preventDefault();el===zoomed?unzoom():zoomTo(el)}});
 $('room-prev').onclick=()=>go(cur-1);$('room-next').onclick=()=>go(cur+1);$('room-back').onclick=unzoom;
@@ -204,13 +203,13 @@ const pop=$('note-pop');let lastFocus=null;
 function openNote(k){lastFocus=document.activeElement;$('note-title').textContent=NOTES[k].t;$('note-body').innerHTML=NOTES[k].l;pop.hidden=false;$('note-ok').focus()}
 const closeNote=()=>{pop.hidden=true;if(lastFocus)lastFocus.focus()};$('note-ok').onclick=closeNote;pop.onclick=e=>{if(e.target===pop)closeNote()};
 
-/* ---------- invitation à passer en paysage : disparaît seule quand on tourne le téléphone ---------- */
+/* ---------- invitation à passer en paysage : disparaît seule quand on tourne le téléphone, ou d'un toucher ---------- */
 const portrait=matchMedia('(orientation: portrait)'),rot=$('room-rot');
-portrait.addEventListener('change',()=>{if(!portrait.matches)rot.hidden=true});$('room-rot-ok').onclick=()=>rot.hidden=true;
+portrait.addEventListener('change',()=>{if(!portrait.matches)rot.hidden=true});rot.onclick=()=>rot.hidden=true;
 
 /* ---------- entrée, sortie, animations ---------- */
 function loop(now){raf=requestAnimationFrame(loop);if(cur==0&&!document.hidden)stepArrows(box.querySelector('#r-arrows'),now)}
-function open(){build();$('start').hidden=true;room.hidden=false;cur=0;zoomed=null;room.classList.remove('zoomed');layout();ui();rot.hidden=!portrait.matches;if(!raf)raf=requestAnimationFrame(loop)}
+function open(){build();$('start').hidden=true;room.hidden=false;zoomed=null;room.classList.remove('zoomed');layout();go(0);rot.hidden=!portrait.matches;if(!raf)raf=requestAnimationFrame(loop)}
 function close(){room.hidden=true;$('start').hidden=false;cancelAnimationFrame(raf);raf=0;if(zoomed)unzoom();pop.hidden=true;$('go-sky').focus()}
 $('go-sky').onclick=open;$('room-quit').onclick=close;
 addEventListener('resize',()=>{if(!room.hidden)layout()});
