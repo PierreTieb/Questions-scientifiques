@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/room.css">
 </head><body>
 <canvas id="c"></canvas>
 
@@ -46,7 +47,7 @@
       <span class="q-card__sub">Du noyau d’un atome jusqu’aux galaxies, à la vraie échelle</span>
     </button>
 
-    <div class="q-card q-card--sky" aria-disabled="true">
+    <button type="button" id="go-sky" class="q-card q-card--sky">
       <svg class="q-card__art" viewBox="0 0 320 120" aria-hidden="true">
         <defs>
           <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#44587a"/><stop offset="0.378" stop-color="#55687d"/><stop offset="0.616" stop-color="#6b797e"/><stop offset="0.756" stop-color="#85866f"/><stop offset="0.852" stop-color="#a28c48"/><stop offset="0.919" stop-color="#bf8500"/><stop offset="0.96" stop-color="#cd7200"/><stop offset="1" stop-color="#c95900"/></linearGradient>
@@ -81,8 +82,8 @@
         <path d="M114.5 56h28M128.5 47v18" stroke="#fff" stroke-opacity=".7" stroke-width=".8" stroke-linecap="round"/>
       </svg>
       <span class="q-card__title">D’où viennent les couleurs du ciel ?</span>
-      <span class="q-card__soon">Prochainement…</span>
-    </div>
+      <span class="q-card__sub">Une enquête affichée sur les quatre murs d’une pièce</span>
+    </button>
   </div>
 </section>
 
@@ -124,10 +125,33 @@
   </div>
 </div>
 
+<section id="room" hidden aria-label="D’où viennent les couleurs du ciel ?">
+  <div id="room-scene"><div class="room" id="room-box"></div></div>
+  <button type="button" id="room-quit" aria-label="Revenir au menu">✕</button>
+  <button type="button" id="room-back" hidden>Vue du mur entier</button>
+  <button type="button" id="room-prev" class="room-arrow" aria-label="Mur précédent">‹</button>
+  <button type="button" id="room-next" class="room-arrow" aria-label="Mur suivant">›</button>
+  <div id="room-label" aria-live="polite"></div>
+  <div id="room-rot" hidden>
+    <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="32" y="12" width="36" height="66" rx="7" fill="none" stroke="#fff" stroke-width="4"/><circle cx="50" cy="70" r="3" fill="#fff"/><path d="M80 30a34 34 0 0 1 4 30" fill="none" stroke="#FFD84D" stroke-width="4" stroke-linecap="round"/><path d="M78 56l6 6 5-8" fill="none" stroke="#FFD84D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <p>Tourne ton téléphone en mode paysage pour mieux lire l’enquête.</p>
+    <button type="button" id="room-rot-ok">Continuer quand même</button>
+  </div>
+</section>
+
+<div class="pop-overlay" id="note-pop" hidden>
+  <div class="pop-card note-card" role="dialog" aria-modal="true" aria-labelledby="note-title">
+    <h2 class="pop-title" id="note-title"></h2>
+    <div class="pop-body" id="note-body"></div>
+    <button type="button" class="pop-btn" id="note-ok">J’ai compris</button>
+  </div>
+</div>
+
 <script src="js/home.js"></script>
 <script src="js/land.js"></script>
 <script src="js/core2d.js"></script>
 <script src="js/levels-micro2d.js"></script>
 <script src="js/levels-macro2d.js"></script>
 <script src="js/app2d.js"></script>
+<script src="js/room.js"></script>
 </body></html>
