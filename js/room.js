@@ -42,7 +42,7 @@ const NOTES={
       <p><b>Le diazote</b>, lui, ne sert à rien à notre corps : il entre et ressort sans changer. Il est pourtant le gaz le plus abondant de l’air !</p>
       <dl class="fiche"><dt>Air inspiré</dt><dd>18 % de dioxygène, 2 % de dioxyde de carbone</dd><dt>Air expiré</dt><dd>13 % de dioxygène, 7 % de dioxyde de carbone</dd></dl>
       <p class="petit">Sur l’animation, chaque inspiration fait entrer 100 molécules : 80 de diazote, 18 de dioxygène et 2 de dioxyde de carbone. Dans les poumons, 5 molécules de dioxygène sont remplacées par 5 de dioxyde de carbone.</p>`},
-  bleu:{t:'Pourquoi le ciel est bleu',s:'Les molécules de l’air laissent passer la plupart des couleurs, mais dévient le bleu et le violet dans toutes les directions. Déplace l’œil : hors du rayon, il ne reçoit que du bleu !',
+  bleu:{t:'Pourquoi le ciel est bleu',s:'Les molécules de l’air laissent passer la plupart des couleurs, mais dévient le bleu et le violet dans toutes les directions. Monte ou descends l’œil : hors du rayon du Soleil, il voit le bleu du ciel !',
     l:`<p>La lumière blanche du Soleil contient toutes les couleurs (mur 1). Pour arriver jusqu’à nous, elle traverse l’air et ses milliards de milliards de molécules.</p>
       <p>Ces molécules sont si petites que la plupart des couleurs passent à côté sans être gênées. Mais le <b>bleu</b> et le <b>violet</b> sont <b>déviés</b> par les molécules et partent dans toutes les directions.</p>
       <p>Résultat : où que tu regardes dans le ciel, tu reçois cette lumière bleue déviée par l’air. <b>Le ciel paraît bleu.</b></p>
@@ -161,13 +161,13 @@ const note=(k,x,y,w,r=0,cls='')=>`<div class="note ${cls}" data-note="${k}" role
    ZOOM_TEXT choisit la version utilisée */
 const ZOOM_TEXT=false,
   EL=[{id:'newton',z:[14,16,200,290],zt:[12,16,214,612]},{id:'soleil',z:[228,438,324,189],zt:[228,440,324,236]},{id:'prisme',z:[306,26,498,312],zt:[308,28,494,416]},{id:'arc',z:[798,224,396,305],zt:[800,226,392,442]},
-  {id:'air',z:[12,14,370,292],zt:[18,18,370,420]},{id:'souffle',z:[398,108,414,424],zt:[398,108,414,560]},{id:'bleu',z:[834,52,360,320],zt:[832,52,364,560]}];
+  {id:'air',z:[12,186,370,292],zt:[18,190,370,400]},{id:'souffle',z:[398,108,414,424],zt:[398,108,414,560]},{id:'bleu',z:[834,52,360,320],zt:[832,52,364,560]}];
 /* un seul fil rouge tendu, qui marque les étapes de l'enquête : Newton, le Soleil, le prisme, l'arc-en-ciel ; et les punaises qui tiennent les papiers */
 const STEPS=[[190,200],[262,458],[332,320],[822,370]],
   PINS=[...STEPS.map(p=>[...p,'#d63a2f']),[113,34,'#d63a2f'],[116,317,'#2f6bd6'],[334,48,'#d63a2f'],[776,48,'#d63a2f'],[550,382,'#e0a020'],[520,458,'#d63a2f'],[996,246,'#d63a2f'],[996,533,'#2f9e5e'],[996,35,'#e0a020']];
 function wall1(){const d='M'+STEPS.map(p=>p.join(' ')).join('L');
   return`<div class="board"></div>
-  <div class="card-title" style="left:812px;top:30px;width:368px;transform:rotate(-.8deg)"><span>Mur 1 / 4</span><h2>${TITLES[0]}</h2><p>Suis le fil rouge. Touche un cadre pour t’en approcher, un texte pour le lire en grand.</p></div>
+  <div class="card-title" style="left:812px;top:30px;width:368px;transform:rotate(-.8deg)"><span>Mur n°1</span><h2>${TITLES[0]}</h2><p>Suis le fil rouge. Touche un cadre pour t’en approcher, un texte pour le lire en grand.</p></div>
   <div class="el polaroid" data-el="0" role="button" tabindex="0" aria-label="Portrait d’Isaac Newton" style="left:28px;top:28px;width:170px;transform:rotate(-2deg)"><img src="img/newton.jpg" alt="Isaac Newton, levant le pouce, une pomme accrochée à l’arbre derrière lui" width="150" height="225"><span>Isaac Newton</span></div>
   ${note('newton',20,312,192,1.2)}
   <div class="el exp" data-el="2" role="button" tabindex="0" aria-label="Expérience du prisme" style="left:320px;top:40px;width:470px;height:284px">${prismSVG()}</div>
@@ -179,7 +179,7 @@ function wall1(){const d='M'+STEPS.map(p=>p.join(' ')).join('L');
   <svg class="threads" viewBox="0 0 ${DW} ${DH}" aria-hidden="true"><defs><radialGradient id="pin-hl" cx=".35" cy=".3"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
     <path d="${d}" stroke="rgba(0,0,0,.28)" stroke-width="3" fill="none" stroke-linejoin="round" transform="translate(2 3)"/><path d="${d}" stroke="#c4161c" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="${d}" stroke="#ff6a5a" stroke-width=".7" fill="none" stroke-linejoin="round" opacity=".7"/>
     ${PINS.map(([x,y,c])=>`<ellipse cx="${x+3}" cy="${y+4}" rx="6.5" ry="4" fill="rgba(0,0,0,.3)"/><circle cx="${x}" cy="${y}" r="7" fill="${c}"/><circle cx="${x}" cy="${y}" r="7" fill="url(#pin-hl)"/><circle cx="${x}" cy="${y}" r="7" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/>`).join('')}</svg>`}
-const empty=i=>`<div class="board"></div><div class="card-title card-title--soon" style="left:${DW/2-210}px;top:${DH/2-80}px;width:420px"><span>Mur ${i+1} / 4</span><h2>Bientôt…</h2><p>La suite de l’enquête sera affichée ici.</p></div>`;
+const empty=i=>`<div class="board"></div><div class="card-title card-title--soon" style="left:${DW/2-210}px;top:${DH/2-80}px;width:420px"><span>Mur n°${i+1}</span><h2>Bientôt…</h2><p>La suite de l’enquête sera affichée ici.</p></div>`;
 
 /* ---------- mur 2 : de quoi est fait l'air ? ---------- */
 const MC={N:'#2F6BE0',O:'#E5413A',C:'#3b3f46'},
@@ -206,9 +206,9 @@ function mendelSVG(){const C=8,X0=4,Y0=14;let s='';
   for(let r=0;r<2;r++)for(let g=3;g<=17;g++)s+=`<rect x="${X0+(g-1)*C}" y="${Y0+7*C+4+r*C}" width="${C-1}" height="${C-1}" fill="${r?'#ffab91':'#f48fb1'}"/>`;
   return`<svg class="mendel" viewBox="0 0 152 94" aria-hidden="true"><rect width="152" height="94" fill="#fdfcf7"/><text x="76" y="9.5" text-anchor="middle" class="md-t">Tableau périodique des éléments</text>${s}</svg>`}
 
-/* l'humain vu en coupe de profil : à chaque inspiration, 100 molécules entrent par le nez jusqu'aux poumons (80 N₂, 18 O₂, 2 CO₂) ;
+/* l'humain vu en coupe de profil : à chaque inspiration, 100 molécules entrent par la bouche jusqu'aux poumons (80 N₂, 18 O₂, 2 CO₂) ;
    dans les poumons, 5 O₂ deviennent CO₂, puis tout ressort à l'expiration. Un cycle dure 7 s */
-const BW=390,BH=400,AIRW=[[244,121],[214,117],[190,114],[175,124],[170,146],[172,176],[174,204],[175,230],[176,250]],LUNG=[168,312,56,62],
+const BW=390,BH=400,AIRW=[[232,135],[212,135],[194,135],[180,139],[171,153],[172,176],[174,204],[175,230],[176,250]],LUNG=[168,312,56,62],
   BT=7,INH=3.7,KCOL=[MC.N,MC.O,MC.C],
   ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},
   rndIn=(x0,x1)=>x0+Math.random()*(x1-x0),
@@ -217,21 +217,18 @@ const BW=390,BH=400,AIRW=[[244,121],[214,117],[190,114],[175,124],[170,146],[172
 function bodySVG(){return`<svg viewBox="0 0 ${BW} ${BH}" class="body-svg" aria-label="Coupe d’un humain qui respire : les molécules d’air entrent et sortent des poumons">
   <defs><linearGradient id="b-bg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4efe6"/><stop offset=".55" stop-color="#eaf3fb"/><stop offset="1" stop-color="#dcecf9"/></linearGradient>
     <radialGradient id="b-lungG" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#ffd3d6"/><stop offset=".6" stop-color="#f2a3aa"/><stop offset="1" stop-color="#d9727e"/></radialGradient>
-    <linearGradient id="b-skin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9a57e"/><stop offset=".6" stop-color="#f0c7a2"/><stop offset="1" stop-color="#e8b58e"/></linearGradient></defs>
+    </defs>
   <rect width="${BW}" height="${BH}" fill="url(#b-bg)"/>
-  <path d="M150 26C196 26 214 56 212 82L236 110Q239 119 222 121L216 125Q223 131 216 136Q222 141 214 146Q216 160 206 166Q190 172 182 176L184 196Q230 204 262 232L272 ${BH}H58L64 250Q68 205 118 196L120 172Q88 150 88 98C88 52 112 26 150 26Z" fill="url(#b-skin)" stroke="#b9825d" stroke-width="2"/>
-  <path d="M92 104Q82 40 150 24Q204 24 214 64Q186 44 152 48Q112 56 104 110Z" fill="#5a3a22"/>
-  <ellipse cx="136" cy="104" rx="10" ry="16" fill="#e2b08a" stroke="#b9825d" stroke-width="1.5"/><path d="M200 84q7 -5 13 0q-6 4 -13 0Z" fill="#fff" stroke="#6b4a33" stroke-width="1.2"/><circle cx="206.5" cy="84" r="2.2" fill="#3b2a1e"/>
-  <path d="M196 74q9 -4 17 1" fill="none" stroke="#5a3a22" stroke-width="2" stroke-linecap="round"/>
-  <ellipse cx="168" cy="304" rx="94" ry="104" fill="#e7b291" opacity=".55"/>
-  <path d="M232 120Q212 108 188 110Q170 114 168 136L170 176" fill="none" stroke="#d9727e" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M232 120Q212 108 188 110Q170 114 168 136L170 176" fill="none" stroke="#f6b9bc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M150 26C196 26 214 56 212 84L223 106Q226 114 214 116L214 127Q220 129 219 132L205 133L205 137L219 138Q220 142 213 146Q215 160 206 166Q190 172 182 176L184 196Q230 204 262 232L272 ${BH}H58L64 250Q68 205 118 196L120 172Q88 150 88 98C88 52 112 26 150 26Z" fill="#fbf6f2" stroke="#cdb3a6" stroke-width="2"/>
+  <ellipse cx="168" cy="304" rx="94" ry="104" fill="#f3e0d8" opacity=".8"/>
+  <path d="M214 135Q196 133 184 137Q171 143 170 160L172 176" fill="none" stroke="#d9727e" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M214 135Q196 133 184 137Q171 143 170 160L172 176" fill="none" stroke="#f6b9bc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   <g id="b-lung"><path d="M170 210C118 212 88 292 92 374Q106 396 166 390Q228 396 242 372C248 300 218 212 170 210Z" fill="url(#b-lungG)" stroke="#c45f6b" stroke-width="2"/>
     <path d="M176 250L150 282L128 318L114 352M150 282L158 336M176 250L194 280L210 318L218 352M194 280L188 338M128 318L140 360M210 318L200 362" fill="none" stroke="#c45f6b" stroke-width="3.2" stroke-linecap="round" opacity=".75"/></g>
   <path d="M172 176L176 250" stroke="#c45f6b" stroke-width="13" stroke-linecap="round"/><path d="M172 176L176 250" stroke="#f6b9bc" stroke-width="8" stroke-linecap="round" stroke-dasharray="2.5 3.5"/>
   <path id="b-dia" d="M86 396Q166 352 248 396" fill="none" stroke="#b5584a" stroke-width="4" stroke-linecap="round"/>
   <g id="b-dots"></g>
-  <g class="b-lbl"><text x="248" y="${BH-12}" text-anchor="end">Poumon</text><text x="230" y="100" text-anchor="end">Nez</text><text x="160" y="222" text-anchor="end">Trachée</text></g>
+  <g class="b-lbl"><text x="248" y="${BH-12}" text-anchor="end">Poumon</text><text x="226" y="160">Bouche</text><text x="160" y="222" text-anchor="end">Trachée</text></g>
   <g class="b-leg">${[['N₂ · diazote',MC.N],['O₂ · dioxygène',MC.O],['CO₂ · dioxyde de carbone',MC.C]].map(([t,c],i)=>`<circle cx="256" cy="${20+i*16}" r="4" fill="${c}"/><text x="265" y="${24+i*16}">${t}</text>`).join('')}</g>
   <g class="b-count"><text id="b-phase" x="276" y="248">Inspiration</text><text x="276" y="266" class="b-small">sur 100 molécules :</text>
     ${['N₂','O₂','CO₂'].map((f,i)=>`<circle cx="281" cy="${283+i*18}" r="4.5" fill="${KCOL[i]}"/><text x="291" y="${288+i*18}">${f} : <tspan id="b-n${i}"></tspan></text>`).join('')}</g></svg>`}
@@ -254,23 +251,26 @@ function stepBreath(now){const svg=box.querySelector('.body-svg');if(!svg||!DOTS
   const ph=svg.querySelector('#b-phase');if(ph.dataset.ex!=String(ex)){ph.dataset.ex=ex;ph.textContent=ex?'Expiration':'Inspiration';
     [80,ex?13:18,ex?7:2].forEach((n,i)=>{const e=svg.querySelector('#b-n'+i);e.textContent=n;e.classList.toggle('chg',ex&&i>0)})}}
 
-/* la diffusion par l'air : des flèches de toutes les couleurs partent du Soleil en ligne droite ; dans la couche d'air, le bleu, l'indigo et le violet
-   sont déviés dans toutes les directions, les autres couleurs passent. L'œil se déplace : en face du Soleil il reçoit surtout du jaune, ailleurs du bleu */
-const SW=340,SH=300,SUN2=[28,150],LAY=[112,250],BEAM=[136,164],
-  /* part de rouge, vert et bleu de chaque couleur : les sept ensemble donnent du blanc */
-  LW=[[1,.1,0],[1,.5,0],[1,1,0],[0,1.2,.15],[0,.5,1],[.05,.15,1],[.3,0,1]],LS=[0,1,2].map(i=>LW.reduce((s,w)=>s+w[i],0));
-function skySVG(){let mol='';for(let i=0;i<64;i++){const x=rndIn(LAY[0]+6,LAY[1]-6),y=rndIn(30,290),a=Math.random()*180,k=Math.random()<.8?'N':'O';
+/* la diffusion par l'air : des flèches de toutes les couleurs partent du Soleil en ligne droite, sur un halo blanc qui jaunit en traversant l'air.
+   Le bleu, l'indigo et le violet se perdent dans la couche d'air : ils rebondissent de molécule en molécule, puis en ressortent tous du côté de l'œil,
+   dans toutes les directions. L'œil monte et descend le long du bord droit : hors du rayon, il voit le bleu du ciel ; dans l'axe du Soleil, du jaune, presque blanc au centre */
+const SW=340,SH=300,SUN2=[28,150],LAY=[112,250],BEAM=[136,164],EYX=312;let MOLS=[];
+function skySVG(){MOLS=[];let mol='';for(let i=0;i<70;i++){const x=rndIn(LAY[0]+6,LAY[1]-6),y=rndIn(28,292),a=Math.random()*180,k=Math.random()<.8?'N':'O';MOLS.push([x,y]);
     mol+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(0)})"><circle cx="-2" r="2.6" fill="url(#a-${k})"/><circle cx="2" r="2.6" fill="url(#a-${k})"/></g>`}
-  return`<svg viewBox="0 0 ${SW} ${SH}" class="sky-svg" aria-label="La lumière du Soleil traverse l’air : déplace l’œil">
+  const f=x=>(x/SW).toFixed(3),halo=(dy,o,fl)=>`<rect x="${SUN2[0]}" y="${BEAM[0]-dy}" width="${SW-SUN2[0]}" height="${BEAM[1]-BEAM[0]+2*dy}" fill="url(#s2-halo)" opacity="${o}"${fl?' filter="url(#s2-blur)"':''}/>`;
+  return`<svg viewBox="0 0 ${SW} ${SH}" class="sky-svg" aria-label="La lumière du Soleil traverse l’air : monte ou descends l’œil">
   <defs><radialGradient id="s2-sun"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fffbe8"/><stop offset="1" stop-color="#fff2c8" stop-opacity="0"/></radialGradient>
-    <linearGradient id="s2-air" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7fb0ff" stop-opacity="0"/><stop offset=".12" stop-color="#7fb0ff" stop-opacity=".16"/><stop offset=".88" stop-color="#7fb0ff" stop-opacity=".16"/><stop offset="1" stop-color="#7fb0ff" stop-opacity="0"/></linearGradient></defs>
+    <linearGradient id="s2-air" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7fb0ff" stop-opacity="0"/><stop offset=".12" stop-color="#7fb0ff" stop-opacity=".16"/><stop offset=".88" stop-color="#7fb0ff" stop-opacity=".16"/><stop offset="1" stop-color="#7fb0ff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="s2-halo" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${SW}" y2="0"><stop offset="${f(LAY[0])}" stop-color="#ffffff"/><stop offset="${f(LAY[1])}" stop-color="#ffe066"/><stop offset="1" stop-color="#ffd23a"/></linearGradient>
+    <filter id="s2-blur" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="7"/></filter></defs>
   <rect width="${SW}" height="${SH}" fill="#0a0f26"/>
-  <rect x="${LAY[0]-10}" y="0" width="${LAY[1]-LAY[0]+20}" height="${SH}" fill="url(#s2-air)"/>${mol}
-  <rect x="40" y="${BEAM[0]}" width="${SW-40}" height="${BEAM[1]-BEAM[0]}" fill="#fff" opacity=".05"/>
+  <rect x="${LAY[0]-10}" y="0" width="${LAY[1]-LAY[0]+20}" height="${SH}" fill="url(#s2-air)"/>
+  ${halo(14,.55,1)}${halo(0,.28,0)}${mol}
   <circle cx="${SUN2[0]}" cy="${SUN2[1]}" r="44" fill="url(#s2-sun)" class="p-bulb"/><circle cx="${SUN2[0]}" cy="${SUN2[1]}" r="13" fill="#fff"/>
+  <path d="M${EYX} 14V${SH-14}" stroke="#fff" stroke-opacity=".2" stroke-dasharray="3 5"/>
   <g id="s2-arrows"></g>
   <g class="p-lbl"><text x="${SUN2[0]}" y="${SUN2[1]+34}" text-anchor="middle">Soleil</text><text x="${(LAY[0]+LAY[1])/2}" y="18" text-anchor="middle">Air : diazote et dioxygène</text></g>
-  <g class="eye" id="s2-eye" tabindex="0" role="slider" aria-label="Œil à déplacer">
+  <g class="eye" id="s2-eye" tabindex="0" role="slider" aria-label="Œil à monter ou descendre">
     <g class="bubble"><path class="b-tail"/><rect class="b-box" rx="10"/><path class="b-tail b-tail2"/><rect class="b-view" rx="4" height="20"/><text class="b-txt" text-anchor="middle"></text></g>
     <ellipse cx="0" cy="0" rx="17" ry="10" fill="#fff" stroke="#2b2b2b" stroke-width="1.6"/><circle cx="-2" cy="0" r="6.4" fill="#5b8fd6"/><circle cx="-2" cy="0" r="3" fill="#111"/><circle cx="-4" cy="-2" r="1.4" fill="#fff"/>
     <path d="M-17 0Q0-16 17 0" fill="none" stroke="#2b2b2b" stroke-width="2"/><circle r="26" fill="transparent"/></g></svg>`}
@@ -279,33 +279,32 @@ function bubbleAt(g,x,y,W0){const up=y>95,bw=172,bh=56,bx=Math.max(8-x,Math.min(
   set(g,{transform:`translate(${x.toFixed(1)} ${y.toFixed(1)})`});g.dataset.x=x;g.dataset.y=y;set(q('.b-box'),{x:bx,y:by,width:bw,height:bh});
   const tail=up?`M-8 ${by+bh-1}L0 -13L8 ${by+bh-1}Z`:`M-8 ${by+1}L0 13L8 ${by+1}Z`;g.querySelectorAll('.b-tail').forEach(e=>e.setAttribute('d',tail));
   set(q('.b-view'),{x:bx+10,y:by+8,width:bw-20});set(q('.b-txt'),{x:bx+bw/2,y:by+bh-12})}
-let sArrows=[],sAcc=[1,1,1,1,.2,.2,.2],sLast=0,sSpawn=0,sShow=0;
-function placeSky(svg,x,y){x=Math.max(22,Math.min(SW-22,x));y=Math.max(18,Math.min(SH-14,y));bubbleAt(svg.querySelector('#s2-eye'),x,y,SW);sAcc=sAcc.map(v=>v*.3);sShow=0}
-function stepSky(now){const svg=box.querySelector('.sky-svg');if(!svg)return;const dt=Math.min(50,now-(sLast||now));sLast=now;const g=svg.querySelector('#s2-arrows'),eye=svg.querySelector('#s2-eye'),ex=+eye.dataset.x,ey=+eye.dataset.y,v=.11;
-  /* 50 flèches par seconde, de couleurs tirées au hasard ; une flèche bleue, indigo ou violette sur quatre traverse sans être déviée */
-  for(sSpawn+=dt;sSpawn>20;sSpawn-=20){const k=Math.random()*7|0,e=document.createElementNS(NS,'path');e.setAttribute('d',ARW);e.setAttribute('fill',SPEC[k]);g.appendChild(e);
-    sArrows.push({k,e,x:SUN2[0]+14,y:rndIn(BEAM[0],BEAM[1]),vx:v,vy:0,sx:k>=4&&Math.random()<.75?rndIn(LAY[0],LAY[1]):1e9,got:0})}
-  const decay=Math.exp(-dt/2000);sAcc=sAcc.map(a=>a*decay);
-  sArrows=sArrows.filter(o=>{o.x+=o.vx*dt;o.y+=o.vy*dt;
-    if(o.x>=o.sx){o.sx=1e9;const a=(25+Math.random()*310)*Math.PI/180;o.vx=v*Math.cos(a);o.vy=v*Math.sin(a)}
-    if(o.x<-10||o.x>SW+10||o.y<-10||o.y>SH+10){o.e.remove();return false}
-    if(!o.got&&Math.hypot(o.x-ex,o.y-ey)<30){o.got=1;sAcc[o.k]+=1}
-    o.e.setAttribute('transform',`translate(${o.x.toFixed(1)} ${o.y.toFixed(1)}) rotate(${(Math.atan2(o.vy,o.vx)*57.3).toFixed(0)}) scale(.55)`);return true});
-  /* ce que voit l'œil : le mélange des couleurs reçues ces dernières secondes */
-  if((sShow-=dt)>0)return;sShow=120;const tot=sAcc.reduce((a,b)=>a+b,0),view=eye.querySelector('.b-view'),txt=eye.querySelector('.b-txt');
-  if(tot<.35){view.setAttribute('fill','#000');txt.textContent='Noir : rien n’arrive ici';return}
-  const c=[0,1,2].map(i=>sAcc.reduce((s,a,k)=>s+a*LW[k][i],0)/LS[i]),m=Math.max(...c),bl=(sAcc[4]+sAcc[5]+sAcc[6])/tot;
-  view.setAttribute('fill',`rgb(${c.map(x=>Math.round(255*(.2+.8*(.15+.85*x/m)))).join()})`);
-  txt.textContent=bl>.7?'Surtout du bleu : le ciel !':bl<.3?'Surtout du jaune : le Soleil':'Blanc : toutes les couleurs'}
+/* l'œil glisse sur l'axe vertical du bord droit ; ce qu'il voit dépend de son écart avec l'axe du Soleil */
+/* couleurs vues selon la proximité de l'axe du Soleil (0 : loin, 1 : en plein dans l'axe) : bleu du ciel, bleu pâle, jaune, presque blanc */
+const SKYC=[[0,'#5b9cf0'],[.2,'#cfe3ff'],[.45,'#ffe066'],[.8,'#fff3b8'],[1,'#fffdf2']];
+function placeSky(svg,x,y){y=Math.max(24,Math.min(SH-24,y));const g=svg.querySelector('#s2-eye'),t=Math.max(0,1-Math.abs(y-SUN2[1])/55);bubbleAt(g,EYX,y,SW);
+  g.querySelector('.b-view').setAttribute('fill',(i=>mixh(SKYC[i][1],SKYC[i+1][1],ease((t-SKYC[i][0])/(SKYC[i+1][0]-SKYC[i][0]))))(Math.max(0,SKYC.findIndex(c=>c[0]>=t)-1)));
+  g.querySelector('.b-txt').textContent=t<.12?'Le bleu du ciel':t<.85?'Le Soleil, jaune':'Face au Soleil : presque blanc'}
+let sArrows=[],sLast=0,sSpawn=0;
+/* prochain rebond d'une flèche perdue dans l'air : une molécule voisine, un peu plus loin vers la droite ; après quelques rebonds, elle ressort vers l'œil */
+function aim(o){if(++o.n>o.max||!(o.tg=(c=>c.length?c[Math.random()*c.length|0]:null)(MOLS.filter(([mx,my])=>{const d=Math.hypot(mx-o.x,my-o.y);return d>16&&d<62&&mx>o.x-12})))){
+  o.tg=null;o.out=1;const ty=rndIn(10,SH-10),dx=SW+20-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);o.vx=o.v*dx/d;o.vy=o.v*dy/d}}
+function stepSky(now){const svg=box.querySelector('.sky-svg');if(!svg)return;const dt=Math.min(50,now-(sLast||now));sLast=now;const g=svg.querySelector('#s2-arrows');
+  for(sSpawn+=dt;sSpawn>33;sSpawn-=33){const k=Math.random()*7|0,e=document.createElementNS(NS,'path');e.setAttribute('d',ARW);e.setAttribute('fill',SPEC[k]);g.appendChild(e);
+    sArrows.push({k,e,x:SUN2[0]+14,y:rndIn(BEAM[0],BEAM[1]),v:.1,vx:.1,vy:0,lost:k>=4&&Math.random()<.85,n:0,max:2+(Math.random()*4|0),tg:null,out:0})}
+  sArrows=sArrows.filter(o=>{if(o.lost&&!o.out&&!o.tg&&o.x>=LAY[0]+4)aim(o);
+    if(o.tg){const dx=o.tg[0]-o.x,dy=o.tg[1]-o.y,d=Math.hypot(dx,dy);if(d<=o.v*dt){o.x=o.tg[0];o.y=o.tg[1];aim(o)}else{o.vx=o.v*dx/d;o.vy=o.v*dy/d}}
+    o.x+=o.vx*dt;o.y+=o.vy*dt;if(o.x<-10||o.x>SW+10||o.y<-10||o.y>SH+10){o.e.remove();return false}
+    o.e.setAttribute('transform',`translate(${o.x.toFixed(1)} ${o.y.toFixed(1)}) rotate(${(Math.atan2(o.vy,o.vx)*57.3).toFixed(0)}) scale(.55)`);return true})}
 
 /* disposition du mur 2 : un seul fil rouge de l'affiche à l'humain, puis à la diffusion */
-const STEPS2=[[352,72],[605,128],[850,70]],
-  PINS2=[...STEPS2.map(p=>[...p,'#d63a2f']),[205,312,'#2f6bd6'],[205,476,'#e0a020'],[605,538,'#e0a020'],[1014,380,'#2f9e5e']];
+const STEPS2=[[352,244],[420,126],[850,70]],
+  PINS2=[...STEPS2.map(p=>[...p,'#d63a2f']),[205,484,'#2f6bd6'],[205,40,'#e0a020'],[605,538,'#e0a020'],[1014,380,'#2f9e5e']];
 function wall2(){const d='M'+STEPS2.map(p=>p.join(' ')).join('L');
   return`<div class="board"></div>
-  <div class="el poster" data-el="4" role="button" tabindex="0" aria-label="Affiche : les gaz de l’air" style="left:40px;top:64px;width:330px;height:230px">${airSVG()}${mendelSVG()}</div>
-  ${note('air',40,306,330,.8)}
-  <div class="card-title" style="left:40px;top:478px;width:330px;transform:rotate(-1deg)"><span>Mur 2 / 4</span><h2>${TITLES[1]}</h2><p>De l’air que tu respires jusqu’au bleu du ciel : suis le fil rouge.</p></div>
+  <div class="el poster" data-el="4" role="button" tabindex="0" aria-label="Affiche : les gaz de l’air" style="left:40px;top:236px;width:330px;height:230px">${airSVG()}${mendelSVG()}</div>
+  ${note('air',40,478,330,.8)}
+  <div class="card-title" style="left:40px;top:34px;width:330px;transform:rotate(-1deg)"><span>Mur n°2</span><h2>${TITLES[1]}</h2><p>De l’air que tu respires jusqu’au bleu du ciel : suis le fil rouge.</p></div>
   <div class="el exp exp--body" data-el="5" role="button" tabindex="0" aria-label="Un humain qui respire, vu en coupe" style="left:410px;top:120px;width:390px;height:400px">${bodySVG()}</div>
   ${note('souffle',410,532,390,-.5)}
   <div class="el exp" data-el="6" role="button" tabindex="0" aria-label="La lumière du Soleil traverse l’air" style="left:846px;top:64px;width:336px;height:296px">${skySVG()}</div>
@@ -330,9 +329,15 @@ function layout(){W=innerWidth;H=innerHeight;scene.style.perspective=1.3*W+'px';
   box.querySelectorAll('.wall').forEach((w,i)=>w.style.transform=`rotateY(${-90*i}deg) translateZ(${-W/2}px)`);
   const m=Math.min(W,H)*.025,k=Math.min((W-2*m)/DW,(H-2*m)/DH);K=[k,(W-DW*k)/2,(H-DH*k)/2];
   box.querySelectorAll('.wall-in').forEach(w=>{w.style.transition='none';w.style.transform=`translate(${K[1]}px,${K[2]}px) scale(${k})`;void w.offsetWidth;w.style.transition=''});
-  if(zoomed)zoomTo(zoomed,1);setAng(90*cur,0)}
+  if(zoomed)zoomTo(zoomed,1);setAng(90*cur,0);box.classList.add('flat')}
 function setAng(a,anim=1){ang=a;box.classList.toggle('drag',!anim);box.style.transform=`translateZ(${W/2}px) rotateY(${a}deg)`}
-function go(i){if(zoomed)unzoom();cur=Math.max(0,Math.min(NAV-1,i));setAng(90*cur);box.querySelectorAll('.wall').forEach((w,k)=>w.classList.toggle('cur',k==cur));ui()}
+function go(i){if(zoomed)unzoom();const prev=cur;cur=Math.max(0,Math.min(NAV-1,i));box.querySelectorAll('.wall').forEach((w,k)=>w.classList.toggle('cur',k==cur));
+  if(prev==cur){setAng(90*cur,0);box.classList.add('flat')}else if(!box.classList.contains('flat'))setAng(90*cur);
+  else{setAng(90*prev,0);box.classList.remove('flat');void box.offsetWidth;setAng(90*cur)}
+  clearTimeout(flatT);flatT=setTimeout(toFlat,950);ui()}
+/* fin de la rotation (ou, au plus tard, juste après sa durée) : retour à plat */
+let flatT=0;const toFlat=()=>box.classList.add('flat');
+box.addEventListener('transitionend',e=>{if(e.target===box&&e.propertyName=='transform')toFlat()});
 function ui(){$('room-prev').hidden=cur<=0||!!zoomed;$('room-next').hidden=cur>=NAV-1||!!zoomed;$('room-back').hidden=!zoomed}
 /* zoom vers un cadre : il vient au centre et remplit l'écran ; transition douce */
 function zoomTo(el,now){const z=EL[+el.dataset.el][ZOOM_TEXT?'zt':'z'],wi=el.closest('.wall-in'),k=Math.min(W*.94/z[2],H*.88/z[3]),tx=W/2-(z[0]+z[2]/2)*k,ty=H/2-(z[1]+z[3]/2)*k;
@@ -365,7 +370,7 @@ portrait.addEventListener('change',()=>{if(!portrait.matches)rot.hidden=true});r
 
 /* ---------- entrée, sortie, animations ---------- */
 function loop(now){raf=requestAnimationFrame(loop);if(document.hidden)return;if(cur==0)stepArrows(box.querySelector('#r-arrows'),now);if(cur==1){stepBreath(now);stepSky(now)}else sLast=0}
-function open(){build();$('start').hidden=true;room.hidden=false;zoomed=null;room.classList.remove('zoomed');layout();go(0);rot.hidden=!portrait.matches;if(!raf)raf=requestAnimationFrame(loop)}
+function open(){build();$('start').hidden=true;room.hidden=false;zoomed=null;room.classList.remove('zoomed');cur=0;layout();go(0);rot.hidden=!portrait.matches;if(!raf)raf=requestAnimationFrame(loop)}
 function close(){room.hidden=true;$('start').hidden=false;cancelAnimationFrame(raf);raf=0;if(zoomed)unzoom();pop.hidden=true;$('go-sky').focus()}
 $('go-sky').onclick=open;$('room-quit').onclick=close;
 addEventListener('resize',()=>{if(!room.hidden)layout()});

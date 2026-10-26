@@ -5,6 +5,10 @@
 .room{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.45,.05,.25,1);pointer-events:none}
 .wall.cur{pointer-events:auto}
 .room.drag{transition:none}
+/* à plat (au repos) : le mur regardé est affiché sans 3D, les autres sont cachés */
+.room.flat{transform:none!important;transition:none}
+.room.flat .wall{transform:none!important;visibility:hidden}
+.room.flat .wall.cur{visibility:visible}
 .face{position:absolute;left:0;top:0;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;overflow:hidden}
 /* mur peint, légèrement plus sombre dans les angles */
 .wall{background:radial-gradient(ellipse at 50% 40%,#efe6d4 0%,#e2d6bf 60%,#cbbda3 100%)}
