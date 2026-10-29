@@ -6,6 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/room.css">
+<link rel="stylesheet" href="css/theatre.css">
 </head><body>
 <canvas id="c"></canvas>
 
@@ -84,7 +85,7 @@
       <span class="q-card__title">D’où viennent les couleurs du ciel ?</span>
       <span class="q-card__sub">Une enquête affichée sur les quatre murs d’une pièce</span>
     </button>
-    <div class="q-card q-card--storm" aria-disabled="true">
+    <button type="button" id="go-storm" class="q-card q-card--storm">
       <svg class="q-card__art storm" viewBox="0 0 320 120" aria-hidden="true">
         <defs><linearGradient id="st-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0f1f"/><stop offset=".6" stop-color="#1a2038"/><stop offset="1" stop-color="#3a3350"/></linearGradient>
           <radialGradient id="st-gl"><stop offset="0" stop-color="#e6ecff" stop-opacity=".75"/><stop offset=".3" stop-color="#c2ceff" stop-opacity=".45"/><stop offset=".65" stop-color="#9eb0ff" stop-opacity=".15"/><stop offset="1" stop-color="#9eb0ff" stop-opacity="0"/></radialGradient>
@@ -102,7 +103,7 @@
       </svg>
       <span class="q-card__title">C’est quoi l’orage ?</span>
       <span class="q-card__soon">Prochainement…</span>
-    </div>
+    </button>
   </div>
 </section>
 
@@ -164,6 +165,16 @@
   </div>
 </div>
 
+<section id="theatre" hidden aria-label="C’est quoi l’orage ?">
+  <div id="th-stage"></div>
+  <button type="button" id="th-quit" aria-label="Revenir au menu">✕</button>
+  <button type="button" id="th-next" hidden>Compris</button>
+  <div id="th-rot" hidden>
+    <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="32" y="12" width="36" height="66" rx="7" fill="none" stroke="#fff" stroke-width="4"/><circle cx="50" cy="70" r="3" fill="#fff"/><path d="M26 22Q6 44 24 68" fill="none" stroke="#FFD84D" stroke-width="4" stroke-linecap="round"/><path d="M14 64l10 4 1-10" fill="none" stroke="#FFD84D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <p>Tourne ton téléphone en mode paysage pour mieux voir le spectacle.</p>
+  </div>
+</section>
+
 <script src="js/home.js"></script>
 <script src="js/land.js"></script>
 <script src="js/core2d.js"></script>
@@ -171,4 +182,5 @@
 <script src="js/levels-macro2d.js"></script>
 <script src="js/app2d.js"></script>
 <script src="js/room.js"></script>
+<script src="js/theatre.js"></script>
 </body></html>
