@@ -1,6 +1,5 @@
-/* Sons du théâtre de l'orage : tout est synthétisé dans le navigateur (aucun enregistrement, donc aucun droit d'auteur).
-   Musique : une petite valse originale, jouée « au loin » (filtrée, réverbérée, faible), en boucle ;
-   machinerie quand les décors bougent (poulies des cintres, frottement sur le plancher) ; tonnerre ; applaudissements. */
+/* Sons du théâtre de l'orage. Synthétisés dans le navigateur : la musique (une petite valse originale, jouée « au loin » : filtrée,
+   réverbérée, faible, en boucle) et le tonnerre. Enregistrements libres de droits (dossier audio) : la poulie des décors et les applaudissements. */
 window.ThAudio=(()=>{let AC=null,out=null,muted=false,mus=null,app=null,rum=null,run=0;const BUF={};
   function ctx(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();const comp=AC.createDynamicsCompressor();out=AC.createGain();out.gain.value=muted?0:1;out.connect(comp);comp.connect(AC.destination)}catch(e){AC=null}}
     if(AC&&AC.state!='running')AC.resume();return AC}
@@ -38,28 +37,21 @@ window.ThAudio=(()=>{let AC=null,out=null,muted=false,mus=null,app=null,rum=null
       [1,2].forEach(j=>{const[,acc]=CH[h[j]||h[0]];acc.forEach(m=>note(L,R,sr,m,t+j*BEAT,BEAT*.6,.07,[1,.3],.18,.4))})});
     const b=ctx().createBuffer(2,n,sr);b.getChannelData(0).set(room(L,sr,0));b.getChannelData(1).set(room(R,sr,13));return BUF.m=b}
 
-  /* ---------- applaudissements : des centaines de claquements de mains, calculés échantillon par échantillon, en boucle ---------- */
-  function renderApplause(){if(BUF.a)return BUF.a;const c=ctx(),sr=c.sampleRate,D=8,n=D*sr,b=c.createBuffer(2,n,sr),L=b.getChannelData(0),R=b.getChannelData(1),cl=Math.floor(.05*sr);
-    for(let k=0;k<D*34;k++){const at=Math.floor(Math.random()*n),f=rnd(700,2300),w=2*Math.PI*f/sr,al=Math.sin(w)/(2*rnd(1.2,2.5)),a0=1+al,
-      b0=al/a0,b2=-al/a0,a1=-2*Math.cos(w)/a0,a2=(1-al)/a0,pan=Math.random(),v=rnd(.35,1);let x1=0,x2=0,y1=0,y2=0;
-      for(let i=0;i<cl;i++){const x=(Math.random()*2-1)*Math.exp(-i/(.007*sr)),y=b0*x+b2*x2-a1*y1-a2*y2;x2=x1;x1=x;y2=y1;y1=y;const j=(at+i)%n;L[j]+=y*v*(1-pan)*1.6;R[j]+=y*v*pan*1.6}}
-    return BUF.a=b}
-
   /* ---------- bruitages ---------- */
-  /* poulie des cintres : la corde frotte, la roue grince par petits coups */
-  function pulley(dur=1.6){const c=ctx();if(!c)return;const t=c.currentTime+.02,g=c.createGain();
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.15);g.gain.setValueAtTime(.09,t+dur-.3);g.gain.linearRampToValueAtTime(0,t+dur);
-    const s=src(c,white(c));chain(s,filt(c,'bandpass',rnd(550,750),.9),g,out);s.start(t,rnd(0,2));s.stop(t+dur+.1);
-    const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=rnd(7,10);lg.gain.value=.04;lfo.connect(lg);lg.connect(g.gain);lfo.start(t);lfo.stop(t+dur);
-    for(let u=t+.1;u<t+dur-.2;u+=rnd(.26,.38)){const o=c.createOscillator(),q=c.createGain(),f=rnd(950,1250);o.type='sawtooth';
-      o.frequency.setValueAtTime(f,u);o.frequency.linearRampToValueAtTime(f*1.22,u+.13);q.gain.setValueAtTime(0,u);q.gain.linearRampToValueAtTime(.022,u+.03);q.gain.linearRampToValueAtTime(0,u+.15);
-      chain(o,filt(c,'bandpass',1700,4),q,out);o.start(u);o.stop(u+.17)}}
-  /* décor qui glisse sur le plancher : roulettes qui grondent et bois qui frotte */
-  function slide(dur=1.6){const c=ctx();if(!c)return;const t=c.currentTime+.02;
-    [[brown(c),'lowpass',260,.5],[white(c),'bandpass',1100,.05]].forEach(([buf,ty,f,v])=>{const g=c.createGain(),s=src(c,buf);
-      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.2);g.gain.setValueAtTime(v,t+dur-.4);g.gain.linearRampToValueAtTime(0,t+dur);
-      const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=rnd(5,13);lg.gain.value=v*.45;lfo.connect(lg);lg.connect(g.gain);lfo.start(t);lfo.stop(t+dur);
-      chain(s,filt(c,ty,f,.8),g,out);s.start(t,rnd(0,3));s.stop(t+dur+.1)})}
+  /* enregistrements (dossier audio) : décodés pour Web Audio dès l'ouverture du théâtre (lecture fiable même sur iPhone) ;
+     si le chargement est impossible (page ouverte en fichier local), on les lit avec un simple lecteur audio */
+  const FILES=['poulie-cintres-1','poulie-cintres-2','poulie-sol-1','poulie-sol-2','applaudissements'],REC={};let loading=0;
+  function load(){if(loading||!ctx())return;loading=1;FILES.forEach(n=>fetch('audio/'+n+'.mp3').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()})
+    .then(b=>new Promise((ok,ko)=>AC.decodeAudioData(b,ok,ko))).then(b=>REC[n]=b).catch(()=>{}))}
+  /* joue un enregistrement ; renvoie de quoi l'arrêter en fondu */
+  function rec(n,vol,fade){const c=ctx();if(!c)return null;if(REC[n]){const g=c.createGain(),s=src(c,REC[n]),t=c.currentTime;g.gain.setValueAtTime(fade?0:vol,t);if(fade)g.gain.linearRampToValueAtTime(vol,t+fade);
+      chain(s,g,out);s.start();return{stop(){const u=c.currentTime;g.gain.cancelScheduledValues(u);g.gain.setTargetAtTime(0,u,.3);s.stop(u+2)}}}
+    const a=new Audio('audio/'+n+'.mp3');a.volume=vol;a.muted=muted;a.play().catch(()=>{});
+    return{el:a,stop(){const k=setInterval(()=>{a.volume=Math.max(0,a.volume-.06);if(!a.volume){clearInterval(k);a.pause()}},60)}}}
+  /* machinerie, discrète : la chaîne de la poulie des cintres (son clair), ou plus grave et assourdie pour un décor au sol ; deux variantes de chaque */
+  const pick=n=>n+'-'+(Math.random()<.5?1:2);
+  function pulley(){rec(pick('poulie-cintres'),.14)}
+  function slide(){rec(pick('poulie-sol'),.2)}
   /* tonnerre : « muffled » étouffé dans le nuage, « far » au loin, « near » tout près et fracassant */
   function thunder(kind){const c=ctx();if(!c)return;const K={muffled:[260,.55,3],far:[750,.6,4],near:[2200,1,5.5]}[kind],[f,v,d]=K,t=c.currentTime+.02;
     const g=c.createGain(),lp=filt(c,'lowpass',f,.7),s=src(c,brown(c));lp.frequency.setValueAtTime(f,t);lp.frequency.exponentialRampToValueAtTime(Math.max(90,f*.2),t+d);
@@ -72,14 +64,13 @@ window.ThAudio=(()=>{let AC=null,out=null,muted=false,mus=null,app=null,rum=null
   function rumble(on){const c=ctx();if(!c)return;const t=c.currentTime;
     if(on&&!rum){const g=c.createGain(),s=src(c,brown(c),1);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.55,t+4);chain(s,filt(c,'lowpass',140),g,out);s.start();rum={s,g}}
     else if(!on&&rum){rum.g.gain.cancelScheduledValues(t);rum.g.gain.setTargetAtTime(0,t,.25);rum.s.stop(t+1.5);rum=null}}
-  function applause(on){const c=ctx();if(!c)return;const t=c.currentTime;
-    if(on&&!app){const g=c.createGain(),s=src(c,renderApplause(),1);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1.4,t+1.2);chain(s,filt(c,'lowpass',5000),g,out);s.start();app={s,g}}
-    else if(!on&&app){app.g.gain.setTargetAtTime(0,t,.3);app.s.stop(t+2);app=null}}
+  /* applaudissements : l'enregistrement (une vingtaine de secondes, qui s'éteint de lui-même) ; coupés en fondu si on quitte ou si on reprend */
+  function applause(on){if(app){app.stop();app=null}if(on)app=rec('applaudissements',.6,.8)}
   /* musique : démarre en fondu, très bas ; « fade » la fait disparaître (fin du spectacle) */
-  function music(on){const c=ctx();if(!c)return;const t=c.currentTime,id=++run;
+  function music(on){const c=ctx();if(!c)return;load();const t=c.currentTime,id=++run;
     if(mus){const m=mus;m.g.gain.cancelScheduledValues(t);m.g.gain.setTargetAtTime(0,t,on?.1:.8);m.s.stop(t+(on?.6:4));mus=null}
     if(on)setTimeout(()=>{if(id!=run||!AC)return;let buf;try{buf=renderMusic()}catch(e){return}const g=AC.createGain(),s=src(AC,buf,1),u=AC.currentTime;g.gain.setValueAtTime(0,u);g.gain.linearRampToValueAtTime(.3,u+3);
       chain(s,g,out);s.start();mus={s,g}},30)}
   function stop(){music(false);applause(false);rumble(false)}
-  function mute(m){muted=m;if(out)out.gain.setTargetAtTime(m?0:1,AC.currentTime,.05)}
+  function mute(m){muted=m;if(app&&app.el)app.el.muted=m;if(out)out.gain.setTargetAtTime(m?0:1,AC.currentTime,.05)}
   return{unlock:ctx,music,pulley,slide,thunder,rumble,applause,stop,mute}})();
